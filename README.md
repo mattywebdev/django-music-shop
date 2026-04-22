@@ -5,6 +5,11 @@ This project simulates a real e-commerce experience with cart management, checko
 
 ---
 
+<img width="1351" height="616" alt="image" src="https://github.com/user-attachments/assets/20eeed72-2bf3-4c86-93ef-896ea626dfc0" />
+<img width="1265" height="653" alt="image" src="https://github.com/user-attachments/assets/7c5fea32-0c8b-4174-998c-bd5630701de0" />
+<img width="1393" height="680" alt="image" src="https://github.com/user-attachments/assets/bd6023a6-af28-406b-924e-a52b402ae5ab" />
+
+
 ## 🚀 Features
 
 - 🎧 Browse albums, tracks, ambient releases, and merchandise  

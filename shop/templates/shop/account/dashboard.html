@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My Account{% endblock %}
+{% block content %}
+<h2>My Account</h2>
+
+<h4 class="mt-4">Recent orders</h4>
+{% if recent_orders %}
+  <ul class="list-group mb-4">
+  {% for o in recent_orders %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <a href="{% url 'order_detail' o.id %}">Order #{{ o.id }}</a>
+      <span>
+        <span class="badge bg-secondary">{{ o.status }}</span>
+        <strong class="ms-2">£{{ o.total_amount|floatformat:2 }}</strong>
+        <small class="text-muted ms-2">{{ o.created_at }}</small>
+      </span>
+    </li>
+  {% endfor %}
+  </ul>
+  <a class="btn btn-outline-primary" href="{% url 'order_list' %}">See all orders</a>
+{% else %}
+  <p class="text-muted">No orders yet.</p>
+{% endif %}
+
+<h4 class="mt-5">Favourites ♥</h4>
+<div class="row">
+  {% for card in fav_cards %}
+    <div class="col-md-4 mb-3">
+      <div class="card h-100">
+        {% if card.image_url %}
+          <img src="{{ card.image_url }}" class="card-img-top" alt="{{ card.title }}">
+        {% endif %}
+        <div class="card-body">
+          <h6 class="card-title">{{ card.title }}</h6>
+          {% if card.price %}<p class="card-text">£{{ card.price|floatformat:2 }}</p>{% endif %}
+            <form method="post" action="{% url 'toggle_favorite' card.f.item_type card.f.item_id %}">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger" type="submit">Remove ♥</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">No favourites yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

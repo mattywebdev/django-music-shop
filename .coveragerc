@@ -1,0 +1,20 @@
+[run]
+source = shop
+branch = True
+omit =
+    manage.py
+    */migrations/*
+    */tests/*
+    */settings.py
+    */wsgi.py
+    */asgi.py
+    venv/*
+    htmlcov/*
+
+[report]
+skip_covered = True
+show_missing = True
+precision = 2
+
+[html]
+directory = htmlcov

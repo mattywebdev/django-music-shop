@@ -1,0 +1,1548 @@
+/* Reset some default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root{
+  --bg:#0e0f12;
+  --text:#f8f9fa;
+  --brand:#ffc107;
+  --primary:#007bff;
+  --card:rgba(175,121,40,0.52);
+  --overlay:rgba(30,30,30,0.6);
+}
+
+/* Desktop only: hover-to-open for Music/Merch with smooth in/out */
+@media (min-width: 992px) and (hover:hover) {
+  /* base (hidden) state */
+  .navbar .dropdown.hover-open > .dropdown-menu {
+    display: block;                /* keep out of flow; it's positioned anyway */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition:
+      opacity .16s ease,
+      transform .16s ease,
+      visibility .16s step-end;    /* hide at the end of fade-out */
+    will-change: opacity, transform;
+  }
+
+  /* visible on hover */
+  .navbar .dropdown.hover-open:hover > .dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition:
+      opacity .16s ease,
+      transform .5s ease,
+      visibility 0s step-start;    /* show immediately, then fade */
+  }
+
+  /* avoid click fighting hover on desktop */
+  .navbar .dropdown.hover-open .dropdown-toggle:active {
+    pointer-events: none;
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .navbar .dropdown.hover-open > .dropdown-menu,
+  .navbar .dropdown.hover-open:hover > .dropdown-menu {
+    transition: none !important;
+  }
+} 
+
+
+/* Photo avatar */
+.avatar-img{
+  width:34px; height:34px; border-radius:50%;
+  object-fit:cover; display:inline-block;
+  border:1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.12);
+}
+
+/* Fallback initial */
+.avatar-fallback{
+  width:34px; height:34px; border-radius:50%;
+  display:inline-grid; place-items:center;
+  font-weight:700; letter-spacing:.5px;
+  color:#fff;
+  background: var(--avatar-bg, hsl(210 80% 35% / .85));
+  border:1px solid rgba(255,255,255,.25);
+  text-transform: uppercase;
+  user-select:none;
+}
+
+/* Anchor dropdown under the cart group */
+.navbar .nav-item.cart-group { position: relative; }
+
+/* Container */
+
+.cart-dd{
+  position: absolute;
+  right: 0;                       /* align to the right edge of the pill */
+  top: calc(100% + 10px);
+  width: 340px;
+  max-height: 420px;
+  display: none;                  /* your JS toggles this */
+  overflow: hidden;
+  color: #fff;
+  background: rgba(25, 25, 28, .86);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+/* little arrow */
+.cart-dd::before{
+  content:"";
+  position:absolute;
+  right: 18px;
+  top:-8px;
+  width: 14px; height: 14px;
+  background: inherit;
+  border-left: 1px solid rgba(255,255,255,.08);
+  border-top: 1px solid rgba(255,255,255,.08);
+  transform: rotate(45deg);
+  z-index:-1;
+}
+
+/* header */
+.cd-head{
+  padding: 10px 14px;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* empty state */
+.cd-empty{
+  padding: 18px 14px;
+  opacity: .85;
+}
+
+/* items area scrolls */
+.cd-items{
+  max-height: 260px;
+  overflow: auto;
+}
+
+/* custom scrollbar (webkit) */
+.cd-items::-webkit-scrollbar { width: 10px; }
+.cd-items::-webkit-scrollbar-thumb { background: rgba(255,255,255,.18); border-radius: 10px; }
+.cd-items::-webkit-scrollbar-track { background: transparent; }
+
+.cd-remove{ color: rgba(45, 67, 165, 0.973); margin-left:8px; }
+.cd-remove:hover{ color:#ff4d4d; }
+
+/* item row */
+.cd-item{
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  grid-template-rows: 22px 20px;
+  grid-template-areas:
+    "thumb title line"
+    "thumb meta  line";
+  gap: 6px 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(255,255,255,.06);
+  transition: background .15s ease;
+}
+.cd-item:last-child{ border-bottom: 0; }
+
+.cd-item:hover{ background: rgba(255,255,255,.06); }
+
+.cd-thumb{
+  grid-area: thumb;
+  width: 48px; height: 48px;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 1px 0 rgba(255,255,255,.05) inset;
+}
+
+.cd-title{
+  grid-area: title;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cd-meta{
+  grid-area: meta;
+  font-size: .85rem;
+  opacity: .75;
+}
+
+.cd-line{
+  grid-area: line;
+  align-self: center;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* footer with totals + actions */
+.cd-footer{
+  padding: 12px 14px;
+  border-top: 1px solid rgba(255,255,255,.08);
+  background: linear-gradient(0deg, rgba(255,255,255,.04), rgba(255,255,255,0));
+}
+.cd-total{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cd-total span{ opacity: .8; }
+.cd-total strong{ font-size: 1.05rem; }
+
+/* buttons */
+.cd-actions{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cd-btn{
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  height: 38px;
+  padding: 0 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: #101213;
+  background: #4ea2ff;
+  text-decoration: none;
+}
+.cd-btn:hover{ filter: brightness(1.05); }
+.cd-btn--ghost{
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.22);
+}
+.cd-btn--ghost:hover{ background: rgba(255,255,255,.08); }
+
+/* Bigger, clickable pill around the cart icon */
+.cart-link { padding: 0; } /* let the pill control spacing */
+.cart-pill{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  padding: .25rem .6rem;
+  border-radius: 999px;
+  background: rgba(0,0,0,.06);
+  transition: background-color .15s ease, transform .08s ease;
+}
+.cart-link:hover .cart-pill,
+.cart-link:focus .cart-pill{
+  background: rgba(0,0,0,.12);
+}
+.cart-link:active .cart-pill{ transform: translateY(1px); }
+
+/* Badge: larger, high-contrast, with a white ring so it pops on any bg */
+.nav-cart-circle{
+  min-width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 999px;
+  font-size: .72rem;
+  font-weight: 700;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #e32222;
+  position: absolute;
+  top: -.4rem;
+  right: -.4rem;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.92);
+}
+
+/* Gentle attention pulse ONLY when count > 0 (no extra JS needed) */
+.nav-cart-circle:not([data-count="0"]) {
+  animation: cartPulse 6s ease-in-out infinite;
+}
+@keyframes cartPulse {
+  0%, 88%, 100% { transform: scale(1); }
+  90% { transform: scale(1.18); }
+  94% { transform: scale(0.95); }
+}
+
+/* Optional: make the whole pill slightly more prominent on non-zero */
+.cart-pill:has(.nav-cart-circle:not([data-count="0"])) {
+  background: rgba(227,34,34,.10);
+  box-shadow: 0 0 0 1px rgba(227,34,34,.25) inset;
+}
+
+.cart-toggle {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  border-radius: 999px;
+  padding-inline: .35rem;          /* subtle pill feel */
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+
+.cart-toggle:hover,
+.cart-toggle:focus {
+  background: rgba(0,0,0,.06);     /* adjust for your theme */
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0,0,0,.08) inset;
+}
+
+/* Caret rotation when open */
+.cart-toggle .caret {
+  margin-left: .25rem;
+  display: inline-block;
+  transition: transform .15s ease;
+}
+.cart-toggle.is-open .caret { transform: rotate(180deg); }
+
+/* Ensure pointer for price; keep badge anchored to icon */
+#cart-icon-link { position: relative; }
+.nav-cart-circle { position: absolute; top: -3px; right: -6px; }
+
+.navbar .nav-item.cart-group {
+  position: relative;              /* anchor for dropdown */
+  display: inline-flex;            /* sit inline with other nav items */
+  align-items: center;
+  gap: .1rem;                      /* space between icon and total */
+  white-space: nowrap;             /* prevent wrap to next line */
+}
+
+
+/* If it still feels wide, you can go even tighter: */
+@media (min-width: 768px) {
+  .navbar .nav-item.cart-group { gap: .15rem; }
+  #cart-icon-link, #cart-toggle { padding-inline: .2rem; }
+}
+
+/* 02. Sections – Hero
+   ------------------------------------------------------------------ */
+
+.hero {
+  position: relative;
+  min-height: 56vh;               /* tall enough to feel “heroic” */
+  display: grid;
+  place-items: center;
+  padding: clamp(5rem, 8vh, 8rem) 1rem clamp(3rem, 6vh, 6rem);
+  text-align: center;
+}
+
+/* Content sits above the overlays/bg */
+.hero > * { position: relative; z-index: 1; }
+
+/* If the hero uses an <img>, this makes it behave like a background */
+.hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* soften the top scrim and end it sooner */
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,.20) 0%,     /* was .55 */
+    rgba(0,0,0,.12) 18%,    /* was .35 */
+    rgba(0,0,0,.05) 36%,
+    rgba(0,0,0,0) 50%       /* was 70% */
+  );
+  z-index:0;
+}
+
+/* help readability without relying on a dark scrim */
+.hero h1,
+.hero p,
+.hero .btn {
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+
+/* Optional: if your hero uses CSS background instead of <img> */
+.hero {
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+/* Utility variants if you ever need them */
+.hero--tall   { min-height: 68vh; }
+.hero--short  { min-height: 40vh; }
+
+/* ===== Landing page ===== */
+
+/* Make the hero sit behind the sticky navbar */
+.hero--landing {
+  /* visually pull the hero up so its background/overlay start at the top of the page */
+  margin-top: calc(-1 * var(--nav-h));
+  /* give the content the space back so text isn’t hidden */
+  padding-top: calc(var(--nav-h) + clamp(48px, 8vh, 96px));
+}
+/* Optional: if you ever want a dedicated hero image just add .hero--with-bg */
+.hero--with-bg {
+  position: relative;
+  background-position: center;
+  background-size: cover;
+}
+.hero--with-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.5));
+}
+.hero__content { position: relative; z-index: 1; }
+
+/* About */
+.shop-description { max-width: 900px; margin-inline: auto; }
+
+/* Trending grid */
+.sales-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+}
+.sale-item {
+  text-align: center;
+  padding: 14px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(175,121,40,.55), rgba(156,33,2,.78));
+  box-shadow: 0 10px 25px rgba(0,0,0,.25);
+  transition: transform .2s ease, box-shadow .2s ease;
+  backdrop-filter: blur(10px);
+}
+.sale-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 38px rgba(0,0,0,.35);
+}
+.sale-item img {
+  width: 100%;
+  aspect-ratio: 16 / 10;   /* keeps all tiles same height */
+  object-fit: cover;
+  border-radius: 8px;
+}
+.sale-item .price {
+  font-size: 1.1rem;
+  color: #ff6b6b;
+  font-weight: 700;
+}
+
+/* Reviews + newsletter */
+.reviews { text-align: center; }
+.review {
+  background: rgba(0,0,0,.8);
+  color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 12px auto;
+  width: min(800px, 90%);
+}
+.newsletter {
+  text-align: center;
+  padding: 30px;
+  color: #fff;
+  border-radius: 10px;
+}
+.newsletter input {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+}
+.newsletter button {
+  padding: 10px 14px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.newsletter button:hover { background: #fff; color: #000; }
+
+
+
+body {
+  display: flex; /* Enable flexbox for the body */
+  flex-direction: column; /* Stack children vertically */
+  font-family: 'Arial', sans-serif; /* Use a clean font */
+  line-height: 1.6;
+  background-image: url('/static/images/background2.jpg'); /* Path to your image */
+  background-size: cover; /* Cover the entire area */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Prevent repeating the image */
+  background-attachment: fixed; /* Keep the background fixed during scrolling */
+  color: #ffffff; /* White text color */
+  margin: 0; /* Reset any body margin */
+  padding: 0; /* Reset any body padding */
+}
+
+html, body {
+  height: 100%; /* Ensure the body takes full height */
+}
+
+header {
+  color: white; /* White text for contrast */
+  padding: 0rem 0; /* Padding for spacing */
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  background: rgba(10,10,10,.28); /* subtle tint for contrast */
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.navbar {
+  margin-bottom: 0; /* Remove margin below navbar */
+  box-shadow: 0 4px 6px rgba(206, 177, 47, 0.3), 
+            0 1px 3px rgba(0, 0, 0, 0.2); /* Multiple shadows for depth */
+}
+
+nav .navbar {
+  margin-bottom: 0; /* Remove margin below navbar */
+}
+
+
+.navbar-nav .nav-link {
+  transition: color 0.3s; /* Smooth transition for hover */
+  color: black; /* White text for nav links */
+  font-weight: bold;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffc107; /* Change link color on hover */
+}
+
+.navbar-nav .nav-account:hover {
+  color:green;
+}
+
+.navbar-nav .nav-link {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.navbar-nav .nav-item span.nav-link {
+  padding-left: 0;
+  padding-right: 0;
+  color: black; /* Adjust the color of the separator */
+  font-weight: bold;
+
+}
+
+
+
+@keyframes dropDown {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px); /* Start from above */
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0); /* End at normal position */
+  }
+}
+
+.nav-item .dropdown-menu {
+  background-color: #1e1e1e9f; /* Dark dropdown background */
+  border-color: #333; /* Border matches card style */
+  opacity: 0; /* Default hidden */
+  transition: opacity 0.3s ease-in-out;
+  width: 150px; /* Adjust the width of the dropdown menu */
+  padding: 10px; /* Adjust padding inside the dropdown menu */
+  top: 90%; /* Controls vertical placement */
+  left: 0; /* Controls horizontal alignment */
+}
+
+.nav-item .dropdown-item {
+  color: #ffffff; /* White text for dropdown items */
+}
+
+.nav-item .dropdown-item:hover {
+  background-color: #232d38; /* Slightly darker on hover */
+  color: #ffc107; /* Highlight text color on hover */
+}
+
+/* Caret SVG Spin Effect */
+.nav-item.dropdown .dropdown-toggle::after {
+  content: "";
+  display: inline-block;
+  width: 10px; /* Adjust width to fit your icon */
+  height: 10px; /* Adjust height to fit your icon */
+  background-image: url('/static/images/arrow_down.svg'); /* Default to downward arrow */
+  background-size: contain; /* Ensure the SVG fits */
+  background-repeat: no-repeat;
+  transition: transform 0.3s ease-in-out, background-image 0.3s ease-in-out;
+  margin-left: 5px; /* Space between text and icon */
+}
+
+.nav-item.dropdown:hover .dropdown-toggle::after {
+  transform: rotate(180deg); /* Rotate the icon */
+  background-image: url('/static/images/arrow_up.svg'); /* Change to upward arrow */
+}
+
+/* Ensure dropdown remains open when interacting */
+.navbar .dropdown-menu {
+  display: none;
+}
+
+.navbar .custom-navbar-brand {
+  color: black; /* Change to your desired color */
+  font-family: 'Pacifico', cursive; /* Change to your chosen font */
+
+}
+
+.navbar .custom-navbar-brand:hover {
+  color: #ffc107; /* Change the color on hover if needed */
+  
+}
+
+.nav-item.dropdown:hover .dropdown-menu {
+  opacity: 1;
+}
+
+main {
+  flex: 1; /* Allow main to grow and fill available space */
+  padding: 2rem 0; /* Padding for main content area */
+}
+
+
+
+.container {
+  max-width: 1200px; /* Set max width for larger screens */
+  margin: 0 auto; /* Center the container */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin-bottom: 1rem; /* Margin below headings for spacing */
+}
+
+p {
+  margin-bottom: 1rem; /* Margin below paragraphs */
+}
+
+/* Add some responsiveness */
+@media (max-width: 768px) {
+  nav .navbar-nav {
+    text-align: center; /* Center text on smaller screens */
+  }
+}
+
+.navbar {
+  margin-bottom: 20px;
+}
+
+/* Cards */
+.card {
+    background-color: rgba(175, 121, 40, 0.514) !important;
+    position: relative;
+    overflow: hidden;
+    color: white;
+    border: 1px solid #333;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: none;
+}
+
+.card:hover {
+    transform: scale(1.03);
+    border-color: #007bff;
+    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.3);
+    border-image-slice: 1;
+    border-width: 1px;
+}
+
+.card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.card-body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(10px) brightness(1);
+    z-index: -1;
+    transition: all 0.3s ease-in-out;
+    background: linear-gradient(180deg, rgba(175, 121, 40, 0.6), rgba(156, 33, 2, 0.8));
+}
+
+.card:hover .card-body::before {
+    backdrop-filter: blur(10px) brightness(1.15);
+}
+
+.card-title {
+    color: #fff;
+    font-size: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    transition: color 0.3s ease;
+}
+
+.card-title:hover {
+    color: #007bff;
+}
+
+.card-text {
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+.card-img-top {
+    max-height: 235px;
+    object-fit: cover;
+    border-radius: 20px;
+    z-index: 2;
+}
+
+.btn {
+    background-color: #007bff;
+    border-radius: 5px;
+    color: #fff;
+    transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+
+
+
+/* Buttons */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #004085;
+  border-radius:10px;
+}
+
+/* Additional Styling */
+h2 {
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.row {
+  margin: 20px 0;
+}
+
+footer {
+  background-color: transparent; /* Set the footer to be transparent */
+  color: white; /* Keep the text color white for contrast */
+  padding: 1rem 0; /* Padding for footer */
+  text-align: center; /* Center the footer text */
+  position: relative; /* Keeps footer in the document flow */
+}
+
+/* Checkout */ 
+.checkout-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f900;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  color: black;
+  backdrop-filter: blur(10px)
+}
+
+.checkout-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.checkout-container h1,
+.checkout-container h2 {
+  color: #333;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input[type="text"],
+input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid black;
+  border-radius: 4px;
+}
+
+.btn {
+  display: inline-block;
+  padding: 10px 20px;
+  margin-top: 20px;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.order-summary {
+  margin-top: 30px;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  order: 1;
+  backdrop-filter: blur(10px);
+  color: white;
+}
+
+.order-summary ul {
+  list-style: none;
+  padding: 0;
+}
+
+.order-summary li {
+  margin: 5px 0;
+}
+
+/* Container for Billing and Payment Info */
+.billing-payment-wrapper {
+  display: flex;
+  justify-content: space-between; /* Creates space between the two sections */
+  align-items: flex-start; /* Align items to the top */
+  flex-wrap: wrap;
+}
+
+.billing-info, .payment-info{
+  width: 48%; /* Make sure they are side by side with some space */
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8); /* Makes content readable */
+  border-radius: 8px;
+  order: 2;
+}
+
+.billing-info input, .payment-info input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+}
+
+.form-wide button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .billing-payment-wrapper {
+      flex-direction: column; /* Stack them on smaller screens */
+  }
+  .billing-info, .payment-info, .order-summary {
+      width: 100%; /* Full width for each section */
+      margin-bottom: 20px;
+  }
+}
+
+/* Ensure cart icon container is relative to position the tooltip correctly */
+.nav-item.position-relative {
+  position: relative;
+}
+
+/* Tooltip styling */
+.cart-tooltip {
+  visibility: hidden;   /* Hidden by default */
+  background-color: #ff4d4d;  /* Red background for error */
+  color: #fff;
+  text-align: center;
+  border-radius: 4px;
+  padding: 5px;
+  position: absolute;
+  top: 50px; /* Adjust to show below or to the side of the cart */
+  right: 300px;
+  z-index: 10;
+  max-width: 250px;  /* Set max-width to control max expansion */
+  font-size: 0.9em;
+  white-space: nowrap; /* Allow text to wrap */
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Show tooltip on hover */
+.nav-item.position-relative:hover .cart-tooltip {
+  visibility: visible;
+}
+
+/* Cart button*/
+/* sticky action button */
+.cart-form .btn.btn-primary {
+  display: inline-block;
+  width: auto;
+  padding: 8px 22px;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  background-color: #0d6efd;
+  border: none;
+  box-shadow: 0 4px 12px rgba(13,110,253,.35);
+  transition: all 0.2s ease;
+}
+
+/* calmer on hover */
+.cart-form .btn.btn-primary:hover {
+  background-color: #0b5ed7;
+  box-shadow: 0 6px 18px rgba(13,110,253,.45);
+}
+
+
+/* Checkout button stays on left, same height */
+.cart-actions .btn-checkout{
+  padding:8px 22px;
+  border-radius:10px;
+  background:linear-gradient(90deg,#198754,#00b97c);
+  color:#fff; border:none; font-weight:600;
+  transition: filter .2s ease;
+}
+.cart-actions .btn-checkout:hover{ filter:brightness(1.1); }
+
+.cart-actions .btn-primary{
+  align-self: flex-end; /* align right inside column */
+  padding: 8px 22px;
+  border-radius: 10px;
+  background: #0d6efd;
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  box-shadow: 0 10px 24px rgba(13,110,253,.35);
+  animation: cartPulse 3s ease-in-out infinite;
+  transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+}
+
+.cart-actions .btn-primary:hover{
+  background:#0b5ed7;
+  transform: translateY(-1px);
+  box-shadow: 0 14px 30px rgba(13,110,253,.55), 0 0 10px rgba(13,110,253,.35);
+}
+
+.cart-actions .btn-checkout:hover {
+  filter: brightness(1.1);
+}
+
+@keyframes cartPulse {
+  0%, 100% { transform: translateY(0); box-shadow: 0 10px 24px rgba(13,110,253,.35); }
+  50%      { transform: translateY(-1px); box-shadow: 0 14px 30px rgba(13,110,253,.55); }
+}
+
+/* mobile: make it full width */
+
+/* Responsive: stack vertically on small screens */
+@media (max-width: 768px) {
+  .cart-actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .cart-form .btn.btn-primary,
+  .cart-actions .btn-checkout {
+    width: 100%;
+  }
+}
+/* Container styling */
+/* Container */
+.cart-container{
+  position: relative;
+  max-width: 1100px;
+  margin: 64px auto;
+  padding: 24px;
+  background: rgba(30,30,30,.72);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(8px) saturate(105%);
+}
+
+/* Title */
+.cart-title{
+  text-align:center;
+  font-weight:700;
+  margin-bottom:20px;
+}
+
+/* Table base */
+.cart-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0 12px;    /* “carded” rows */
+}
+
+.cart-table thead th{
+  background:#0d6efd;
+  color:#fff;
+  font-weight:700;
+  padding:14px 16px;
+  border-top-left-radius:10px;
+  border-top-right-radius:10px;
+}
+
+.cart-table tbody td{
+  background:rgba(255,255,255,.06);
+  padding:14px 16px;
+  vertical-align:middle;
+  border-top:1px solid rgba(255,255,255,.10);
+  border-bottom:1px solid rgba(0,0,0,.15);
+}
+
+.cart-table tbody td:first-child{
+  border-top-left-radius:12px;
+  border-bottom-left-radius:12px;
+}
+.cart-table tbody td:last-child{
+  border-top-right-radius:12px;
+  border-bottom-right-radius:12px;
+}
+
+/* Product cell */
+.cart-item{ display:flex; align-items:center; gap:14px; }
+/* Row polish */
+.cart-table tbody tr { transition: background .2s ease; }
+.cart-table tbody tr:hover td { background: rgba(255,255,255,.08); }
+
+.album-icon{
+  width:76px; height:76px; object-fit:cover; border-radius:10px;
+  box-shadow:0 6px 16px rgba(0,0,0,.22);
+}
+.cart-item-title{ font-weight:600; }
+
+/* Quantity */
+.quantity-controls{ display:inline-flex; align-items:center; gap:8px; }
+.btn-quantity{
+  width:36px; height:36px; border:0; border-radius:8px;
+  background:rgba(255,255,255,.14); color:#fff; font-size:18px; line-height:1;
+}
+.btn-quantity:hover{ background:rgba(255,255,255,.24); cursor:pointer; }
+
+.quantity-input{
+  width:64px; height:36px; text-align:center; border-radius:8px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18); color:#fff;
+}
+
+/* Remove link */
+.delete-link{ color:#ff6b6b; text-decoration:none; font-weight:600; }
+.delete-link:hover{ text-decoration:underline; }
+
+/* Summary & actions */
+.cart-summary{
+  margin-top:12px;
+  display:flex; justify-content:flex-end; gap:24px;
+  color:#ddd;
+}
+.cart-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,.18); /* subtle divider line */
+}
+
+/* Small screens: make table scroll or stack */
+@media (max-width: 768px){
+  .cart-container{ padding:16px; }
+  .cart-table{ display:block; overflow-x:auto; }
+  .album-icon{ width:64px; height:64px; }
+  .quantity-input{ width:56px; }
+}
+
+/* Remove button styling */
+.btn-remove {
+  color: rgb(112, 6, 6);
+  font-weight: bold;
+  text-decoration:underline;
+  transition: color 0.2s ease-in-out;
+}
+
+.btn-remove:hover {
+  color: #cc0000;
+}
+
+/* Checkout button styling */
+.btn-checkout {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  text-align: center;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+.btn-checkout:hover {
+  background-color: #0056b3;
+}
+
+/* Empty cart message */
+.empty-cart {
+  text-align: center;
+  color: #888;
+  font-size: 1.2em;
+}
+
+
+.album-icon {
+  width: 120px;
+  height: 60px;
+}
+
+.nav-cart-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: red;  /* Set the circle background color */
+  color: white;           /* Set the text color inside the circle */
+  border-radius: 50%;     /* Makes it a circle */
+  width: 20px;            /* Set the size of the circle */
+  height: 20px;
+  font-size: 0.8em;       /* Adjust font size as needed */
+  margin-left: -18px;       /* Space between the icon and the circle */
+  transform: scale(0.8);
+  position: relative;
+  top: -8px;  /* Adjust this value to move it higher */
+}
+
+.cart-total-price {
+  font-weight: bold;
+}
+
+
+
+/* Hide the default number input arrows in Chrome, Safari, and Edge */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none; /* Remove the appearance of the spin buttons */
+    margin: 0; /* Ensure there is no margin */
+}
+
+/* Hide the default number input arrows in Firefox */
+input[type="number"] {
+    -moz-appearance: textfield; /* Change appearance to text field */
+}
+
+/* Dropdown styles */
+.cart-dropdown {
+  font-family: 'Pacifico', cursive;
+  font-size: 15px;
+  color: #fff;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #33333371;
+  border-radius: 5px;
+  z-index: 1000;
+  display: none;
+  width: 250px;
+  padding: 10px;
+}
+
+.cart-dropdown ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cart-dropdown li {
+  padding: 10px;
+  border-bottom: 1px solid #444;
+  transition: background-color 0.3s ease;
+}
+
+.cart-dropdown li:hover {
+  background-color: #444;
+  color: #fff;
+}
+
+/* Define a custom class for DM Sans */
+.dm-sans-dropdown {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500; /* Adjust the weight between 100 and 1000 */
+  font-optical-sizing: auto;
+}
+
+.dropdown-price {
+  float: right;
+
+}
+
+/* Center the trash icon in its cell */
+.cart-item-remove {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Icon Styling */
+.fa-trash-o {
+  font-size: 18px; /* Adjust to desired size */
+  color: black!important;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  padding: 5px; /* Add padding to prevent it from touching cell edges */
+}
+
+.fa-trash-o:hover {
+  color: #9e0404!important;
+}
+
+.dropdown-cart-title {
+  font: 18px sans-serif;
+  font-weight: bold;
+}
+
+
+/* Tooltip styling */
+[data-tooltip] {
+  position: relative;
+  cursor: pointer;
+}
+
+/* Tooltip text */
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: -42px; /* Position tooltip above */
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 8px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+  z-index: 10;
+}
+
+/* Tooltip arrow */
+[data-tooltip]::before {
+  content: "";
+  position: absolute;
+  top: -8px; /* Position arrow above tooltip */
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 6px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.8) transparent transparent transparent;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease;
+}
+
+/* Show tooltip on hover */
+[data-tooltip]:hover::after,
+[data-tooltip]:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Display tooltip below element if near the top of the page */
+.navbar [data-tooltip]::after {
+  top: 100%; /* Position tooltip below */
+  bottom: auto;
+  margin-top: 8px; /* Add space between tooltip and element */
+}
+
+.navbar [data-tooltip]::before {
+  top: auto;
+  bottom: -6px; /* Position arrow below tooltip */
+  transform: translateX(-50%) rotate(180deg); /* Rotate arrow to point upward */
+}
+
+/* Hide tooltip when dropdown is open */
+.tooltip-hidden::after, 
+.tooltip-hidden::before {
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+.album-catalog-header {
+  padding-bottom: 10px;
+}
+
+.user-name {
+  font-weight: bold;
+  color: #007bff !important; /* Bootstrap primary blue */
+  padding-right: 10px;
+}
+
+.placeholder-wave {
+  height: 80px; /* Same height as the actual waveform */
+  position: relative;
+  overflow: hidden;
+  background-color: #be5eb600; /* Light background for better visibility */
+}
+
+.placeholder-wave .bar {
+  position: absolute;
+  bottom: 0;
+  width: 5px; /* Width of each bar */
+  background-color: rgba(108, 33, 122, 0.452); /* Color of the bars */
+  animation: wave 0.5s ease-in-out infinite;
+}
+
+@keyframes wave {
+  0%, 100% {
+      height: 20%; /* Minimum height of the wave */
+  }
+  50% {
+      height: 80%; /* Maximum height of the wave */
+  }
+}
+
+/* Create multiple bars with different delays for a wave effect */
+.placeholder-wave .bar:nth-child(1) { left: 10%; animation-delay: 0s; }
+.placeholder-wave .bar:nth-child(2) { left: 20%; animation-delay: 0.05s; }
+.placeholder-wave .bar:nth-child(3) { left: 30%; animation-delay: 0.10s; }
+.placeholder-wave .bar:nth-child(4) { left: 40%; animation-delay: 0.15s; }
+.placeholder-wave .bar:nth-child(5) { left: 50%; animation-delay: 0.20s; }
+.placeholder-wave .bar:nth-child(6) { left: 60%; animation-delay: 0.25s; }
+.placeholder-wave .bar:nth-child(7) { left: 70%; animation-delay: 0.30s; }
+.placeholder-wave .bar:nth-child(8) { left: 80%; animation-delay: 0.35s; }
+
+
+/* Navigation */
+.merch-nav {
+  margin-bottom: 20px;
+}
+
+.merch-nav a {
+  text-decoration: none;
+  color: #ffffff;
+  background: #333;
+  padding: 10px 15px;
+  margin: 0 5px;
+  border-radius: 5px;
+  transition: 0.3s ease;
+}
+
+.merch-nav a:hover {
+  background: #ff4500;
+}
+
+/* optional: keep your dark look but on Bootstrap cards */
+.merch-card {
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* consistent image height across cards */
+.merch-card .card-img-top {
+  height: 220px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+
+
+.table {
+  background-color: rgba(241, 233, 233, 0.849);
+  border-radius: 10px;
+}
+
+
+.username-link {
+    font-weight: bold;
+    color: #13296e;
+    text-decoration: none;
+}
+
+.username-link:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+.waveform-player button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#nav-search {
+  border-radius: 8px;
+  padding: 8px 14px;
+  transition: all .2s ease;
+}
+
+#nav-search:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .25);
+  background-color: rgba(255,255,255,0.95);
+}
+
+.cart-status {
+  display: inline-block;
+  margin-left: auto;      /* pushes it to the right when parent is a flex container */
+  float: right;           /* fallback for non-flex layouts */
+  align-self: center;     /* centers vertically in a flex row (ignored otherwise) */
+  text-align: right;
+  font-size: 0.85rem;
+  color: #ffd966; /* warm gold tone to match your navbar */
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  transition: opacity 1.3s ease, transform 0.2s ease;
+}
+
+.cart-status[hidden] {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* one surface for both checkout panels */
+.checkout-card{
+  border-radius:14px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter: blur(3px);
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+}
+
+/* tidy list rows + tabular numbers so prices align */
+.checkout-list li{ border-bottom:1px solid rgba(0,0,0,.06); }
+.checkout-list li:last-child{ border-bottom:0; }
+.checkout-price{ font-variant-numeric: tabular-nums; }
+
+/* desktop sticky */
+@media (min-width: 992px){
+  .sticky-lg{ position:sticky; top:1rem; }
+}
+
+
+/* Panes that match the cart look */
+.panel {
+  background: rgba(20,20,20,0.55);
+  color: #eee;
+  border-radius: 18px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.35);
+  backdrop-filter: blur(6px);
+}
+.panel .panel-body { padding: 1.25rem; }
+
+/* Blue header strip */
+.panel-head {
+  background: #2d6cdf;           /* match your cart’s blue */
+  color: #fff;
+  border-radius: 12px;
+  padding: .65rem .9rem;
+  font-weight: 600;
+  margin-bottom: .85rem;
+}
+
+/* Summary rows (table-like) */
+.summary-rows .row-item {
+  background: rgba(0,0,0,.33);
+  border-radius: 12px;
+  padding: .75rem .9rem;
+  display: grid;
+  grid-template-columns: 1fr 110px 120px; /* Product | Qty | Total */
+  align-items: center; column-gap: 12px;
+  margin-bottom: .75rem;
+}
+.summary-rows .row-item:last-child { margin-bottom: 0; }
+.thumb { width: 64px; height: 48px; object-fit: cover; border-radius: 10px; }
+.title { font-weight: 600; color: #f6f6f6; }
+.meta  { color: #bdbdbd; font-size: .85rem; }
+.num   { font-variant-numeric: tabular-nums; }
+.total-line { border-top: 1px solid rgba(255,255,255,.12); }
+
+.badge-soft {
+  background: rgba(255,255,255,.2); color: #fff;
+  border-radius: 999px; padding: .25rem .6rem; font-size: .75rem; font-weight: 600;
+}
+
+/* Make summary stick on desktop */
+@media (min-width: 992px){ .sticky-lg{ position: sticky; top: 1rem; } }
+
+/* main “glass” panel (matches Cart container) */
+.glass {
+  background: var(--panel-bg);
+  color: var(--text-main);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
+  backdrop-filter: blur(6px);
+}
+.glass-body{ padding: 1.25rem; }
+
+/* blue “pill” header strip (like the cart headings bar) */
+.pill-head{
+  background: var(--brand-blue);
+  color: #fff;
+  border-radius: 12px;
+  padding: .65rem .9rem;
+  font-weight: 600;
+}
+
+/* row boxes (product lines) */
+.row-box{
+  background: var(--panel-row);
+  border-radius: var(--row-radius);
+  padding: .75rem .9rem;
+}
+.num{ font-variant-numeric: tabular-nums; }
+.meta{ color: var(--text-dim); font-size: .85rem; }
+
+/* dark inputs so the Billing panel matches the Cart theme */
+.form-control.form-dark{
+  background: var(--input-bg);
+  color: var(--text-main);
+  border: 0;
+}
+.form-control.form-dark::placeholder{ color: #9aa4ad; }
+.form-control.form-dark:focus{
+  background: var(--input-bg);
+  color: var(--text-main);
+  box-shadow: 0 0 0 .2rem rgba(45,108,223,.25);
+  border: 0;
+}
+
+/* grid for the summary: Product | Qty | Total (same widths as cart) */
+.summary-grid{ display:grid; grid-template-columns: 1fr 110px 120px; column-gap:12px; align-items:center; }

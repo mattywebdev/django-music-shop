@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+
+{% block title %}Your Cart{% endblock %}
+
+{% block content %}
+<div class="cart-container">
+    <h2 class="cart-title">Your Cart (items: {{ total_quantity }})</h2>
+
+    {% if request.session.cart %}
+        <!-- Start the form that wraps all items -->
+        <form id="cart-update-form" method="post" action="{% url 'update_cart_all' %}" class="cart-form">
+            {% csrf_token %}
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th></th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for album_id, item in request.session.cart.items %}
+                        <tr>
+                            <!-- Product -->
+                            <td class="cart-item">
+                                <img src="{{ item.icon_url }}" alt="{{ item.title }}" class="album-icon">
+                                <span class="cart-item-title" data-tooltip="{{ item.title }}">{{ item.title }}</span>
+                            </td>
+
+                            <!-- Quantity -->
+                            <td class="cart-item-quantity">
+                                <div class="quantity-controls">
+                                <button type="button" class="btn-quantity minus" data-tooltip="decrease amount">−</button>
+                                <input type="number" name="quantity_{{ album_id }}" value="{{ item.quantity }}" min="1"
+                                        class="quantity-input" data-price="{{ item.price }}" data-album-id="{{ album_id }}">
+                                <button type="button" class="btn-quantity plus" data-tooltip="add more">+</button>
+                                </div> 
+
+                            </td>
+                            <!-- Delete (own cell) -->
+                            <td class="cart-item-remove">
+                                <a href="{% url 'remove_from_cart' item_type=item.type item_id=item.id %}"
+                                class="delete-link" title="Remove">Delete</a>
+                            </td>
+
+                            <!-- Line total -->
+                            <td class="cart-item-price">
+                                £<span class="price">{{ item.total_price|floatformat:2 }}</span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="cart-summary">
+                <div class="cart-total-price">
+                    Total price: £{{ total_price|floatformat:2 }}
+                </div>
+                <div class="cart-total-items">
+                    Total items: {{ total_quantity }}
+                </div>
+            </div>
+        </form>
+            <div class="cart-actions">
+            <!-- Update Cart (now above checkout) -->
+            <span id="cart-status" class="cart-status" hidden>Updating…</span>
+            <!-- Proceed to Checkout (below, main CTA) -->
+            <a href="{% url 'checkout' %}" class="btn btn-checkout" data-tooltip="Go to checkout">
+                Proceed to Checkout
+            </a>
+            </div>
+    {% else %}
+        <p class="empty-cart">Your cart is empty.</p>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const totalCartCount = document.querySelector('#nav-cart-count');
+        const totalCartPrice = document.querySelector('#nav-cart-total');
+
+        document.querySelectorAll('.cart-item-quantity').forEach(itemQuantity => {
+            const minusButton = itemQuantity.querySelector('.minus');
+            const plusButton = itemQuantity.querySelector('.plus');
+            const quantityInput = itemQuantity.querySelector('.quantity-input');
+            const priceElement = itemQuantity.closest('tr').querySelector('.price');
+            const basePrice = parseFloat(quantityInput.dataset.price);
+
+            minusButton.addEventListener('click', () => {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity > 1) {
+                    quantity -= 1;
+                    quantityInput.value = quantity;
+                    updatePrice(quantity, basePrice, priceElement);
+                    updateCartSummary();
+                }
+            });
+
+            plusButton.addEventListener('click', () => {
+                let quantity = parseInt(quantityInput.value);
+                quantity += 1;
+                quantityInput.value = quantity;
+                updatePrice(quantity, basePrice, priceElement);
+                updateCartSummary();
+            });
+
+            quantityInput.addEventListener('input', () => {
+                let quantity = parseInt(quantityInput.value);
+                if (quantity < 1) quantity = 1;
+                quantityInput.value = quantity;
+                updatePrice(quantity, basePrice, priceElement);
+                updateCartSummary();
+            });
+
+            function updatePrice(quantity, basePrice, priceElement) {
+                const newPrice = (quantity * basePrice).toFixed(2);
+                priceElement.textContent = newPrice;
+            }
+
+            function updateCartSummary() {
+                let totalItems = 0;
+                let totalPrice = 0;
+
+                document.querySelectorAll('.quantity-input').forEach(input => {
+                    totalItems += parseInt(input.value);
+                    totalPrice += parseFloat(input.value) * parseFloat(input.dataset.price);
+                });
+
+                totalCartCount.textContent = totalItems;
+                totalCartPrice.textContent = totalPrice.toFixed(2);
+            }
+              const f = document.getElementById('cart-update-form');
+                document.querySelectorAll('.btn-quantity, .quantity-input').forEach(el => {
+                    el.addEventListener('click', () => f.requestSubmit());
+                    el.addEventListener('change', () => f.requestSubmit());
+                });
+
+                const form = document.getElementById('cart-update-form');
+                const statusEl = document.getElementById('cart-status');
+
+                function submitCartDebounced(){
+                if (statusEl) statusEl.hidden = false;
+                clearTimeout(window.__cartT);
+                window.__cartT = setTimeout(() => {
+                    form.requestSubmit();
+                    setTimeout(() => { if (statusEl) statusEl.hidden = true; }, 300); // hide shortly after submit
+                }, 300);
+                }
+
+                document.querySelectorAll('.btn-quantity, .quantity-input').forEach(el => {
+                el.addEventListener('click', submitCartDebounced);
+                el.addEventListener('change', submitCartDebounced);
+                });
+        });
+    });
+</script>
+
+{% endblock %}

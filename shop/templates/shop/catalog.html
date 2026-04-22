@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Album Catalog{% endblock %}
+
+{% block content %}
+    <h2 class="album-catalog-header">Album Catalog</h2>
+    <div class="row">
+        {% for album in albums %}
+            <div class="col-md-4" id="album-{{ album.id }}">
+                <div class="card mb-4">
+                    <img src="{{ album.cover_image.url }}" class="card-img-top" alt="{{ album.title }}">
+                   <div class="card-body album-card-body">
+                        <!-- Top: title + price -->
+                        <div class="album-header">
+                            <h5 class="album-title" title="{{ album.title }}">{{ album.title }}</h5>
+                            <div class="album-price">£{{ album.price|floatformat:2 }}</div>
+                        </div>
+
+                        <!-- Middle: chips -->
+                        <div class="album-chips">
+                            <span class="chip chip-main" title="{{ album.artist.name }}">
+                                {{ album.artist.name }}
+                            </span>
+                            <span class="chip" title="{{ album.genre.name }}">
+                                {{ album.genre.name }}
+                            </span>
+                            <span class="chip chip-soft">
+                                {{ album.release_date }}
+                            </span>
+                        </div>
+
+                        <!-- Tiny meta line -->
+                        <div class="album-meta-line">
+                            {{ album.tracks_count }} tracks
+                            <span class="dot">•</span>
+                            {{ album.total_duration }}
+                        </div>
+
+                        <!-- Actions -->
+                        <div class="album-actions d-flex gap-2 mb-3">
+                            <a href="{% url 'add_to_cart' 'album' album.id %}" class="btn btn-primary btn-sm">
+                                Add to Cart
+                            </a>
+
+                            {% is_favorite request.user 'album' album.id as fav %}
+                            <form method="post" action="{% url 'toggle_favorite' 'album' album.id %}" class="d-inline">
+                                {% csrf_token %}
+                                <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
+                                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Preview block -->
+                        <div class="album-preview">
+                            <div id="waveform-{{ album.id }}" class="waveform"></div>
+                            <div class="d-flex align-items-center justify-content-between mt-2">
+                                <button id="play-button-{{ album.id }}"
+                                        class="btn btn-secondary btn-sm"
+                                        onclick="togglePlay('{{ album.id }}')">
+                                    Play Preview
+                                </button>
+                                <span id="time-display-{{ album.id }}" class="time-display">0:00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    
+
+<!-- Load WaveSurfer.js from CDN -->
+<script src="https://unpkg.com/wavesurfer.js"></script>
+
+<!-- Passing track data as a JSON object -->
+<script>
+    const trackData = [
+        {% for album in albums %}
+            {
+                id: '{{ album.id }}',
+                previewClipUrl: '{{ album.preview_clip.url }}'
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    // Convert the object to a JSON string and set it in a hidden element
+    document.write('<script id="track-data" type="application/json">' + JSON.stringify(trackData) + '</' + 'script>');
+</script>
+
+<style>
+    .progress {
+        background-color: #f3f3f3;
+        border-radius: 5px;
+        height: 10px;
+        width: 100%;
+        margin-top: 5px;
+        cursor: pointer;
+    }
+    .progress-bar {
+        background-color: #007bff;
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.1s;
+    }
+
+ /* Album card layout */
+.album-card-body{
+  padding: 14px 16px 16px;
+  color: #f5f5f5;
+    background: linear-gradient(
+    to bottom,
+    rgba(0,0,0,0.20),
+    rgba(0,0,0,0.55)
+  );
+  border-radius: 0 0 18px 18px; /* match your card radius */
+}
+
+/* title + price row */
+.album-header{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+}
+.album-title{
+  font-size:1.05rem;
+  font-weight:600;
+  margin:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.album-price{
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+}
+
+/* chips row */
+.album-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-bottom:3px;
+}
+
+.chip{
+  font-size:0.78rem;
+  padding:1px 7px;
+  border-radius:999px;
+  background:rgba(0,0,0,.35);
+  color:#f0f0f0;
+}
+
+.chip-main{
+  background:rgba(0,0,0,.7);
+}
+
+.chip-soft{
+  background:rgba(255,255,255,.12);
+}
+
+/* little meta line under chips */
+.album-meta-line{
+  font-size:0.85rem;
+  color:#d0d0d0;
+  margin-bottom:10px;
+}
+.dot{ opacity:.6; }
+
+/* actions */
+.album-actions .btn{ border-radius:6px; }
+
+/* preview block visually separated */
+.album-preview{
+  margin-top:4px;
+  padding-top:8px;
+  border-top:1px solid rgba(0,0,0,.25);
+}
+.waveform{
+  height:70px;
+  border-radius:8px;
+  background:rgba(255,255,255,.06);
+  overflow:hidden;
+}
+.time-display{
+  font-size:0.82rem;
+  color:#cfcfcf;
+}
+</style>
+
+{% endblock %}

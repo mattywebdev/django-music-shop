@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Thank you!{% endblock %}
+
+{% block content %}
+<h2>Your order:</h2>
+<div class="success-message">
+    <h1>Thank you for your purchase!</h1>
+    <p>Your order was completed successfully. You will receive a confirmation email shortly.</p>
+    <a href="{% url 'landing_page' %}" class="button">Return to Home</a>
+</div>
+{% endblock %}

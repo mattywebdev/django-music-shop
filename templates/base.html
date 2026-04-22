@@ -1,0 +1,183 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Music Shop{% endblock %}</title>
+
+  <!-- Your main CSS first -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font Awesome 6 (keep just one version to avoid conflicts) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-dark text-light site-body">
+
+  <!-- Sticky, translucent nav -->
+  <header class="sticky-top">
+  <nav class="navbar navbar-expand-lg navbar-dark glass-nav">
+    <div class="container">
+      <a class="navbar-brand custom-navbar-brand" href="{% url 'landing_page' %}">My Music Shop</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+
+        <!-- Left -->
+        <ul class="navbar-nav me-3">
+          <li class="nav-item"><a class="nav-link" href="{% url 'landing_page' %}">Home</a></li>
+
+          <li class="nav-item dropdown dropdown hover-open">
+            <a class="nav-link dropdown-toggle" href="#" id="musicDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Music
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="musicDropdown">
+              <li><a class="dropdown-item" href="{% url 'track_catalog' %}">Tracks</a></li>
+              <li><a class="dropdown-item" href="{% url 'catalog' %}">Albums</a></li>
+              <li><a class="dropdown-item" href="{% url 'ambient' %}">Ambient</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item dropdown dropdown hover-open">
+            <a class="nav-link dropdown-toggle" href="{% url 'merchandise' %}?category=all" id="merchDropdown" role="button" aria-expanded="false">
+              Merchandise
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="merchDropdown">
+              <li><a class="dropdown-item" href="{% url 'merchandise' %}?category=tshirt">T-shirts</a></li>
+              <li><a class="dropdown-item" href="{% url 'merchandise' %}?category=vinyl">Vinyls</a></li>
+              <li><a class="dropdown-item" href="{% url 'merchandise' %}?category=poster">Posters</a></li>
+            </ul>
+          </li>
+
+          <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">About Us</a></li>
+        </ul>
+
+        <!-- Search -->
+        <form id="nav-search-form"
+            class="position-relative d-none d-lg-flex flex-grow-1 mx-4"
+            style="max-width: 480px;"
+            method="get"
+            action="{% url 'catalog' %}"
+            data-suggest-url="{% url 'search_suggest' %}"
+            data-albums-url="{% url 'catalog' %}"
+            data-tracks-url="{% url 'track_catalog' %}"
+            data-merch-url="{% url 'merchandise' %}"
+            autocomplete="off">
+        <input id="nav-search" name="q" class="form-control" placeholder="Search artists, albums, tracks">
+        <div id="nav-suggest" class="dropdown-menu p-0"
+            style="display:none; max-height:50vh; overflow:auto; width:100%; position:absolute; top:100%; left:0;"></div>
+        </form>
+
+{# RIGHT: compact when logged-in #}
+<ul class="navbar-nav align-items-lg-center ms-auto">
+
+  {# CART — single compact pill, always visible #}
+  <li class="nav-item dropdown cart-group">
+    <div id="nav-toast-area"></div>
+    <a class="nav-link cart-link" href="{% url 'cart' %}" id="cart-icon-link" title="View cart">
+      <span class="cart-pill">
+        🛒
+        <span class="nav-cart-circle" data-count="{{ cart_count }}">{{ cart_count }}</span>
+      </span>
+    </a>
+
+    <a class="nav-link cart-toggle" href="#" id="cart-toggle" role="button"
+       aria-expanded="false" aria-controls="cart-dropdown" title="Open mini-cart">
+      (£<span id="nav-cart-total">{{ cart_total_price }}</span>) <span class="caret">▾</span>
+    </a>
+
+            {# sexy dropdown #}
+            {% include "partials/cart_dropdown.html" %}
+        </li>
+
+        {% if request.user.is_authenticated %}
+
+            {# FAVOURITES — icon + badge #}
+            <li class="nav-item">
+            <a href="{% url 'favorites' %}" class="nav-link position-relative" title="Favourites">
+                <span class="nav-icon">♥</span>
+                {% if favorites_count %}
+                <span class="nav-badge">{{ favorites_count }}</span>
+                {% endif %}
+            </a>
+            </li>
+
+            {# USER — avatar/initial with dropdown #}
+            <li class="nav-item dropdown">
+            <a class="nav-link p-0 ms-1" href="#" id="userMenu" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false" title="Account">
+                {% if avatar_url %}
+                <img src="{{ avatar_url }}" alt="{{ request.user }}" class="avatar-img" width="34" height="34">
+                {% else %}
+                <span class="avatar-fallback" style="--avatar-bg: {{ avatar_bg|default:'hsl(210 80% 35% / .85)' }}">
+                    {{ avatar_initial }}
+                </span>
+                {% endif %}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
+                <li class="dropdown-header small text-muted px-3">
+                Hi, {{ request.user.first_name|default:request.user.username }}
+                </li>
+                <li><a class="dropdown-item" href="{% url 'account_dashboard' %}">Account</a></li>
+                <li><a class="dropdown-item" href="{% url 'account_orders' %}">Orders</a></li>
+                <li><a class="dropdown-item" href="{% url 'favorites' %}">Favourites</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+            </li>
+
+        {% else %}
+            {# Not logged in: keep Register | Login (clean) #}
+            <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
+            <li class="nav-item"><span class="nav-link">|</span></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+        {% endif %}
+        </ul>
+
+      </div>
+    </div>
+  </nav>
+</header>
+
+  <!-- Optional hero (home page can override this) -->
+  {% block hero %}{% endblock %}
+
+  <!-- Regular page content -->
+        <main id="main" class="page-content">
+            <div class="container">
+            {% block content %}{% endblock %}
+            </div>
+        </main>
+
+  <footer class="text-white text-center py-4 footer-glass">
+    <p class="mb-2">Copyright © 2025 My Music Shop</p>
+    <div>
+      <a href="#" class="text-secondary mx-2"><i class="fab fa-facebook-f"></i></a>
+      <a href="#" class="text-secondary mx-2"><i class="fab fa-twitter"></i></a>
+      <a href="#" class="text-secondary mx-2"><i class="fab fa-instagram"></i></a>
+    </div>
+  </footer>
+
+  <!-- Bootstrap + Popper -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js"></script>
+
+  <!-- Your scripts -->
+   {% block extra_js %}{% endblock %}
+  <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>

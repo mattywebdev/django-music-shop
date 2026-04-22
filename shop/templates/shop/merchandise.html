@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block content %}
+<div class="container">  <!-- optional but gives a nice max-width + centering -->
+  <h1>Merchandise</h1>
+
+  <nav class="merch-nav mb-3">
+    <a href="?category=all" class="btn btn-dark btn-sm">All</a>
+    <a href="?category=tshirt" class="btn btn-dark btn-sm">T-Shirts</a>
+    <a href="?category=vinyl" class="btn btn-dark btn-sm">Vinyls</a>
+    <a href="?category=poster" class="btn btn-dark btn-sm">Posters</a>
+  </nav>
+
+  <!-- Bootstrap grid controls how many per row -->
+  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
+
+    {% for product in products %}
+      {% if product|instance_of:'Tshirt' %}
+        {% with 'tshirt' as type %}
+        <div class="col">
+          <div class="card merch-card h-100">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product }}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ product }}</h5>
+              <p class="card-text mb-3">Price: £{{ product.price }}</p>
+
+              <div class="mt-auto d-flex gap-2">
+                <a href="{% url 'add_to_cart' type product.id %}" class="btn btn-primary">Add to Cart</a>
+                {% is_favorite request.user type product.id as fav %}
+                <form method="post" action="{% url 'toggle_favorite' type product.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
+                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+
+      {% elif product|instance_of:'Vinyl' %}
+        {% with 'vinyl' as type %}
+        <div class="col">
+          <div class="card merch-card h-100">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product }}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ product }}</h5>
+              <p class="card-text mb-3">Price: £{{ product.price }}</p>
+              <div class="mt-auto d-flex gap-2">
+                <a href="{% url 'add_to_cart' type product.id %}" class="btn btn-primary">Add to Cart</a>
+                {% is_favorite request.user type product.id as fav %}
+                <form method="post" action="{% url 'toggle_favorite' type product.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
+                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+
+      {% elif product|instance_of:'Poster' %}
+        {% with 'poster' as type %}
+        <div class="col">
+          <div class="card merch-card h-100">
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product }}">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">{{ product }}</h5>
+              <p class="card-text mb-3">Price: £{{ product.price }}</p>
+              <div class="mt-auto d-flex gap-2">
+                <a href="{% url 'add_to_cart' type product.id %}" class="btn btn-primary">Add to Cart</a>
+                {% is_favorite request.user type product.id as fav %}
+                <form method="post" action="{% url 'toggle_favorite' type product.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
+                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+      {% endif %}
+    {% endfor %}
+
+  </div>
+</div>
+{% endblock %}

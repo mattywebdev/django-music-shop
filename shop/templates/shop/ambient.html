@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Ambient music{% endblock %}
+
+{% block content %}
+
+
+<h2 class="album-catalog-header">Ambient selection</h2>
+<div class="row">
+    {% for ambient in ambients %}
+        <div class="col-md-4" id="ambient-{{ ambient.id }}">  {# anchor so /ambient/#ambient-12 scrolls here #}
+            <div class="card mb-4">
+                <img src="{{ ambient.cover_image.url }}" class="card-img-top" alt="{{ ambient.title }}">
+                <div class="card-body">
+                    {# If your model uses 'title', keep title; if it’s 'name', keep name #}
+                    <h5 class="card-title">{{ ambient.title }}</h5>
+                    <p class="card-text">Artist: {{ ambient.artist.name }}</p>
+                    <p class="card-text">Genre: {{ ambient.genre }}</p>
+                    <p class="card-text">Release date: {{ ambient.release_date }}</p>
+                    <p class="card-text">Price: £{{ ambient.price }}</p>
+
+                    <div class="d-flex gap-2 align-items-center mb-2">
+                        <!-- Add to Cart -->
+                        <a href="{% url 'add_to_cart' 'ambient' ambient.id %}" class="btn btn-primary">Add to Cart</a>
+
+                        <!-- ♥ Toggle -->
+                        {% is_favorite request.user 'ambient' ambient.id as fav %}
+                        <form method="post" action="{% url 'toggle_favorite' 'ambient' ambient.id %}" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
+                                {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
+                            </button>
+                        </form>
+                    </div>
+
+
+                    <!-- WaveSurfer Preview Player -->
+                    <div class="waveform-player">
+                        <div id="waveform-{{ ambient.id }}" style="height: 80px;"></div>
+                        <button id="play-button-{{ ambient.id }}" class="btn btn-secondary" onclick="togglePlay('{{ ambient.id }}')">Play Preview</button>
+                        <span id="time-display-{{ ambient.id }}">0:00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<script src="https://unpkg.com/wavesurfer.js"></script>
+
+    
+<!-- Passing track data as a JSON object -->
+<script>
+    const trackData = [
+        {% for ambient in ambients %}
+            {
+                id: '{{ ambient.id }}',
+                previewClipUrl: '{{ ambient.preview_clip.url }}'
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    // Convert the object to a JSON string and set it in a hidden element
+    document.write('<script id="track-data" type="application/json">' + JSON.stringify(trackData) + '</' + 'script>');
+</script>
+
+<style>
+    .progress {
+        background-color: #f3f3f3;
+        border-radius: 5px;
+        height: 10px;
+        width: 100%;
+        margin-top: 5px;
+        cursor: pointer;
+    }
+    .progress-bar {
+        background-color: #007bff;
+        height: 100%;
+        border-radius: 5px;
+        transition: width 0.1s;
+    }
+</style>
+{% endblock content %}

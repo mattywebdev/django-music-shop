@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}My Favourites{% endblock %}
+{% block content %}
+<h2>My Favourites</h2>
+<div class="row">
+  {% for card in fav_cards %}
+    <div class="col-md-4 mb-3">
+    <div class="card h-100 position-relative">
+        {% if card.image_url %}
+        <img src="{{ card.image_url }}" class="card-img-top" alt="{{ card.title }}">
+        {% endif %}
+        <div class="card-body">
+        <h6 class="card-title">{{ card.title }}</h6>
+        {% if card.price %}<p class="card-text">£{{ card.price|floatformat:2 }}</p>{% endif %}
+
+        {# Make the whole card clickable #}
+        <a href="{{ card.shop_url }}" class="stretched-link" aria-label="View in shop"></a>
+
+        {# Keep remove as a real button (above the stretched link) #}
+        <form method="post" action="{% url 'toggle_favorite' card.f.item_type card.f.item_id %}" class="d-inline">
+            {% csrf_token %}
+            <button class="btn btn-sm btn-outline-danger position-relative" style="z-index:2" type="submit">
+            Remove ♥
+            </button>
+        </form>
+        </div>
+    </div>
+    </div>
+  {% empty %}
+  <p class="text-muted">No favourites yet.</p>
+  {% endfor %}
+</div>
+{% endblock %}

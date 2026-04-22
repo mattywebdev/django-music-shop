@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - My Music Shop{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-4"><u>About Us</u></h1>
+    <div class="row">
+        <div class="col-md-6">
+            <img src="{% static 'images/storefront.jpg' %}" alt="Music Shop" class="img-fluid rounded">
+        </div>
+        <div class="col-md-6">
+            <h2>Welcome to My Music Shop</h2>
+            <p>We are an independent music store dedicated to providing high-quality music products for passionate fans and musicians alike. Our store offers a carefully curated selection of albums, tracks, and exclusive merchandise.</p>
+            <h3>Our Services</h3>
+            <ul>
+                <li>Wide selection of vinyls, CDs, and digital music.</li>
+                <li>Exclusive band merchandise, including T-shirts and posters.</li>
+                <li>Fast and secure worldwide shipping.</li>
+                <li>Friendly customer support for all your music needs.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <h3>Where We Are Based</h3>
+            <p>Our store is based in the UK, but we proudly ship worldwide so that music lovers everywhere can get their hands on the best records and merchandise.</p>
+            <h3>Why Choose Us?</h3>
+            <ul>
+                <li>Passion for music and dedication to quality.</li>
+                <li>Authentic, officially licensed merchandise.</li>
+                <li>Secure online shopping with multiple payment options.</li>
+                <li>Fast delivery and excellent customer service.</li>
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <img src="{% static 'images/music-merch.jpg' %}" alt="Music Merchandise" class="img-fluid rounded">
+        </div>
+    </div>
+</div>
+{% endblock %}

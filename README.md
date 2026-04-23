@@ -79,19 +79,26 @@ python manage.py migrate
 
 ---
 
-### 5. Run the server
+### 5. Load demo data
+```bash
+python manage.py loaddata demo_store_data_final.json
+```
+This will populate the store with:
 
+albums
+tracks
+ambient sounds
+merchandise
+
+---
+
+### 6. Run the development server
 ```bash
 python manage.py runserver
 ```
+Open:
 
-Open in browser:
-
-```
 http://127.0.0.1:8000/
-```
-
----
 
 ## 📡 API Endpoints
 
@@ -104,11 +111,34 @@ http://127.0.0.1:8000/
 
 ---
 
+## 🖼 Demo Media
+
+Sample media files (images and audio previews) are included in the repository so the store loads with working content out of the box.
+
+---
+
+## 🧠 Key Features Explained
+Dynamic Pricing Logic
+
+Tracks can inherit pricing from albums or define their own custom price.
+
+Data Relationships
+Albums → Tracks (1-to-many)
+Artists → Albums / Merch
+Generic cart system supporting multiple item types
+Order System
+Supports multiple item types (albums, tracks, merch, ambient)
+Calculates totals dynamically
+Stores order history
+
+---
+
 ## 📁 Project Structure
 
 ```
 music_shop/
 ├── shop/               # Main app (models, views, cart, orders)
+├── media/              # Demo media (images & audio)
 ├── templates/          # HTML templates
 ├── static/             # CSS / JS
 ├── manage.py

@@ -130,7 +130,10 @@ function togglePlay(trackId) {
 
 // This will be called on DOMContentLoaded to set everything up
 document.addEventListener('DOMContentLoaded', () => {
-    const trackData = JSON.parse(document.getElementById('track-data').textContent);
+    const trackDataEl = document.getElementById('track-data');
+    if (!trackDataEl) return;
+
+    const trackData = JSON.parse(trackDataEl.textContent);
     initializeWaveSurfers(trackData);
 });
 

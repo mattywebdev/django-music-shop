@@ -18,7 +18,6 @@ staticfiles/
 
 # Ignore all media by default
 media/*
-
 # Allow only demo media folders
 !media/album_covers/
 !media/ambient_covers/
@@ -57,13 +56,12 @@ media/*
 !media/track_previews/Volumes_-_Erased_UtIHz77.mid
 !media/track_previews/Volumes_-_Erased_nhxiZh2.mid
 !media/track_previews/Volumes_-_Erased_9G030Gc.mid
-
 # Test / coverage artifacts
 .coverage
 htmlcov/
 .pytest_cache/
 
-# Environment variables
+# Environment variables 
 .env
 .env.*
 

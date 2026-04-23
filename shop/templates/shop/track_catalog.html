@@ -34,7 +34,7 @@
 
                         <div class="waveform-player">
                             <div id="waveform-{{ track.id }}" style="height: 80px;"></div>
-                            <button id="play-button-{{ track.id }}" class="btn btn-secondary">
+                            <button id="play-button-{{ track.id }}" class="btn btn-secondary" onclick="togglePlay('{{ track.id }}')">
                                 Play Preview
                             </button>
                             <span id="time-display-{{ track.id }}">0:00</span>
@@ -49,18 +49,17 @@
 
     
     <!-- Passing track data as a JSON object -->
-    <script>
-        const trackData = [
-            {% for track in tracks %}
-                {
-                    id: '{{ track.id }}',
-                    previewClipUrl: '{{ track.preview_clip.url }}'
-                }{% if not forloop.last %},{% endif %}
-            {% endfor %}
-        ];
-        // Convert the object to a JSON string and set it in a hidden element
-        document.write('<script id="track-data" type="application/json">' + JSON.stringify(trackData) + '</' + 'script>');
-    </script>
+<script>
+    const trackData = [
+        {% for track in tracks %}
+            {
+                id: '{{ track.id }}',
+                previewClipUrl: '{% if track.preview_clip %}{{ track.preview_clip.url }}{% endif %}'
+            }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+    document.write('<script id="track-data" type="application/json">' + JSON.stringify(trackData) + '</' + 'script>');
+</script>
 
     <style>
         .progress {

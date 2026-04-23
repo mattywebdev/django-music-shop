@@ -85,10 +85,10 @@ python manage.py loaddata demo_store_data_final.json
 ```
 This will populate the store with:
 
-albums
-tracks
-ambient sounds
-merchandise
+- albums
+- tracks
+- ambient sounds
+- merchandise
 
 ---
 
@@ -118,18 +118,21 @@ Sample media files (images and audio previews) are included in the repository so
 ---
 
 ## 🧠 Key Features Explained
-Dynamic Pricing Logic
+Album data is dynamically derived from its related tracks.
 
-Tracks can inherit pricing from albums or define their own custom price.
+- The number of tracks is calculated automatically based on associated records
+- Total duration is computed by summing the duration of all tracks
 
-Data Relationships
-Albums → Tracks (1-to-many)
-Artists → Albums / Merch
-Generic cart system supporting multiple item types
-Order System
-Supports multiple item types (albums, tracks, merch, ambient)
-Calculates totals dynamically
-Stores order history
+This ensures album data always stays consistent without manual updates.
+
+- Data Relationships
+- Albums → Tracks (1-to-many)
+- Artists → Albums / Merch
+- Generic cart system supporting multiple item types
+- Order System
+- Supports multiple item types (albums, tracks, merch, ambient)
+- Calculates totals dynamically
+- Stores order history
 
 ---
 

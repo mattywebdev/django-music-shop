@@ -13,9 +13,50 @@ env/
 # Django
 db.sqlite3
 *.sqlite3
-media/
 staticfiles/
 *.log
+
+# Ignore all media by default
+media/*
+
+# Allow only demo media folders
+!media/album_covers/
+!media/ambient_covers/
+!media/ambient_previews/
+!media/audio_previews/
+!media/merch_images/
+!media/track_previews/
+
+# Allow only exact demo files used by fixture
+!media/album_covers/snow.jpg
+!media/album_covers/the_fall.jpg
+!media/album_covers/the_forest.jpg
+!media/album_covers/Gehennas.png
+
+!media/ambient_covers/fireplace.jpg
+
+!media/ambient_previews/fireplace.mp3
+
+!media/audio_previews/futility.mp3
+!media/audio_previews/heeh.mp3
+!media/audio_previews/eciles.wav
+!media/audio_previews/recreantbass.mp3
+!media/audio_previews/Volumes_-_Erased.mid
+
+!media/merch_images/tshirt.jpg
+!media/merch_images/Free_Vinyl_Mockup_2.jpg
+!media/merch_images/dan-loftus-N4CnMbcZe70-unsplash.jpg
+!media/merch_images/yan-lee-GnZyUqc5bv4-unsplash.jpg
+
+!media/track_previews/doodle.mp3
+!media/track_previews/pisces.mp3
+!media/track_previews/eciles.wav
+!media/track_previews/recreantbass.mp3
+!media/track_previews/Volumes_-_Erased.mid
+!media/track_previews/Volumes_-_Erased_zMCJOA2.mid
+!media/track_previews/Volumes_-_Erased_UtIHz77.mid
+!media/track_previews/Volumes_-_Erased_nhxiZh2.mid
+!media/track_previews/Volumes_-_Erased_9G030Gc.mid
 
 # Test / coverage artifacts
 .coverage

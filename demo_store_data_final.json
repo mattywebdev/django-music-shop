@@ -1,0 +1,497 @@
+[
+  {
+    "model": "shop.genre",
+    "pk": 1,
+    "fields": {
+      "name": "lofi hip-hop"
+    }
+  },
+  {
+    "model": "shop.genre",
+    "pk": 2,
+    "fields": {
+      "name": "Death Metal"
+    }
+  },
+  {
+    "model": "shop.genre",
+    "pk": 3,
+    "fields": {
+      "name": "Ambient"
+    }
+  },
+  {
+    "model": "shop.artist",
+    "pk": 1,
+    "fields": {
+      "name": "Alleviat"
+    }
+  },
+  {
+    "model": "shop.artist",
+    "pk": 2,
+    "fields": {
+      "name": "Vicky"
+    }
+  },
+  {
+    "model": "shop.artist",
+    "pk": 3,
+    "fields": {
+      "name": "Ambience"
+    }
+  },
+  {
+    "model": "shop.ambient",
+    "pk": 1,
+    "fields": {
+      "name": "Real fireplace sound",
+      "artist": 3,
+      "genre": "Ambient",
+      "cover_image": "ambient_covers/fireplace.jpg",
+      "preview_clip": "ambient_previews/fireplace.mp3",
+      "release_date": "2024-02-23",
+      "price": "1.99"
+    }
+  },
+  {
+    "model": "shop.album",
+    "pk": 1,
+    "fields": {
+      "title": "Snow",
+      "artist": 1,
+      "genre": 1,
+      "release_date": "2024-10-17",
+      "price": "5.99",
+      "cover_image": "album_covers/snow.jpg",
+      "preview_clip": "audio_previews/futility.mp3",
+      "sales": 0
+    }
+  },
+  {
+    "model": "shop.album",
+    "pk": 2,
+    "fields": {
+      "title": "The Fall",
+      "artist": 1,
+      "genre": 1,
+      "release_date": "2023-12-09",
+      "price": "7.99",
+      "cover_image": "album_covers/the_fall.jpg",
+      "preview_clip": "audio_previews/heeh.mp3",
+      "sales": 0
+    }
+  },
+  {
+    "model": "shop.album",
+    "pk": 3,
+    "fields": {
+      "title": "The Forest",
+      "artist": 1,
+      "genre": 1,
+      "release_date": "2024-02-20",
+      "price": "8.99",
+      "cover_image": "album_covers/the_forest.jpg",
+      "preview_clip": "audio_previews/eciles.wav",
+      "sales": 0
+    }
+  },
+  {
+    "model": "shop.album",
+    "pk": 5,
+    "fields": {
+      "title": "Gehennah",
+      "artist": 2,
+      "genre": 2,
+      "release_date": "2024-11-10",
+      "price": "10.99",
+      "cover_image": "album_covers/Gehennas.png",
+      "preview_clip": "track_previews/doodle.mp3",
+      "sales": 1
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 1,
+    "fields": {
+      "title": "The Birch",
+      "album": 3,
+      "artist": 1,
+      "duration": "00:03:33",
+      "preview_clip": "track_previews/eciles.wav",
+      "price": "0.99"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 2,
+    "fields": {
+      "title": "Hope",
+      "album": 1,
+      "artist": 1,
+      "duration": "00:02:39",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 3,
+    "fields": {
+      "title": "Soon it will start to snow",
+      "album": 1,
+      "artist": 1,
+      "duration": "00:07:06",
+      "preview_clip": "track_previews/pisces.mp3",
+      "price": "1.49"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 5,
+    "fields": {
+      "title": "Throne of Sulphur",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:11:25",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.49"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 6,
+    "fields": {
+      "title": "Serpents Beneath the Altar",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:08:23",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.49"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 7,
+    "fields": {
+      "title": "Gates of the Wretched",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:01:50",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "0.99"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 8,
+    "fields": {
+      "title": "Purging Light",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:07:12",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.49"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 9,
+    "fields": {
+      "title": "Cinders of Dominion",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:08:21",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.49"
+    }
+  },
+  {
+    "model": "shop.tshirt",
+    "pk": 1,
+    "fields": {
+      "artist": 1,
+      "price": "24.99",
+      "image": "merch_images/tshirt.jpg",
+      "sales": 0,
+      "size": "XL",
+      "color": "Black"
+    }
+  },
+  {
+    "model": "shop.vinyl",
+    "pk": 1,
+    "fields": {
+      "artist": 1,
+      "price": "29.99",
+      "image": "merch_images/Free_Vinyl_Mockup_2.jpg",
+      "sales": 1,
+      "edition": "Standard",
+      "release_year": 2021
+    }
+  },
+  {
+    "model": "shop.poster",
+    "pk": 1,
+    "fields": {
+      "artist": 1,
+      "price": "9.99",
+      "image": "merch_images/dan-loftus-N4CnMbcZe70-unsplash.jpg",
+      "sales": 1,
+      "dimensions": "XL"
+    }
+  },
+  {
+    "model": "shop.poster",
+    "pk": 2,
+    "fields": {
+      "artist": 2,
+      "price": "8.99",
+      "image": "merch_images/yan-lee-GnZyUqc5bv4-unsplash.jpg",
+      "sales": 0,
+      "dimensions": "L"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 10,
+    "fields": {
+      "title": "Winter Window",
+      "album": 1,
+      "artist": 1,
+      "duration": "00:03:12",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "0.99"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 11,
+    "fields": {
+      "title": "Frosted Silence",
+      "album": 1,
+      "artist": 1,
+      "duration": "00:04:28",
+      "preview_clip": "track_previews/pisces.mp3",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 12,
+    "fields": {
+      "title": "Amber Leaves",
+      "album": 2,
+      "artist": 1,
+      "duration": "00:03:45",
+      "preview_clip": "track_previews/eciles.wav",
+      "price": "0.99"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 13,
+    "fields": {
+      "title": "Golden Dusk",
+      "album": 2,
+      "artist": 1,
+      "duration": "00:04:11",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 14,
+    "fields": {
+      "title": "Quiet Pavement",
+      "album": 2,
+      "artist": 1,
+      "duration": "00:02:58",
+      "preview_clip": "track_previews/pisces.mp3",
+      "price": "0.99"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 15,
+    "fields": {
+      "title": "Moss Underfoot",
+      "album": 3,
+      "artist": 1,
+      "duration": "00:04:02",
+      "preview_clip": "track_previews/eciles.wav",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 16,
+    "fields": {
+      "title": "Needles in the Wind",
+      "album": 3,
+      "artist": 1,
+      "duration": "00:05:21",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 17,
+    "fields": {
+      "title": "Hidden Clearing",
+      "album": 3,
+      "artist": 1,
+      "duration": "00:03:47",
+      "preview_clip": "track_previews/pisces.mp3",
+      "price": "0.99"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 18,
+    "fields": {
+      "title": "Ashes of the Hollow Crown",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:06:18",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.track",
+    "pk": 19,
+    "fields": {
+      "title": "Chapel of Rust",
+      "album": 5,
+      "artist": 2,
+      "duration": "00:05:42",
+      "preview_clip": "track_previews/doodle.mp3",
+      "price": "1.29"
+    }
+  },
+  {
+    "model": "shop.tshirt",
+    "pk": 2,
+    "fields": {
+      "artist": 1,
+      "price": "24.99",
+      "image": "merch_images/tshirt.jpg",
+      "sales": 0,
+      "size": "L",
+      "color": "Charcoal"
+    }
+  },
+  {
+    "model": "shop.tshirt",
+    "pk": 3,
+    "fields": {
+      "artist": 2,
+      "price": "26.99",
+      "image": "merch_images/tshirt.jpg",
+      "sales": 0,
+      "size": "XL",
+      "color": "Black"
+    }
+  },
+  {
+    "model": "shop.vinyl",
+    "pk": 2,
+    "fields": {
+      "artist": 1,
+      "price": "34.99",
+      "image": "merch_images/Free_Vinyl_Mockup_2.jpg",
+      "sales": 0,
+      "edition": "Deluxe",
+      "release_year": 2024
+    }
+  },
+  {
+    "model": "shop.vinyl",
+    "pk": 3,
+    "fields": {
+      "artist": 2,
+      "price": "32.99",
+      "image": "merch_images/Free_Vinyl_Mockup_2.jpg",
+      "sales": 0,
+      "edition": "Limited Red",
+      "release_year": 2024
+    }
+  },
+  {
+    "model": "shop.poster",
+    "pk": 3,
+    "fields": {
+      "artist": 1,
+      "price": "11.99",
+      "image": "merch_images/dan-loftus-N4CnMbcZe70-unsplash.jpg",
+      "sales": 0,
+      "dimensions": "A2"
+    }
+  },
+  {
+    "model": "shop.poster",
+    "pk": 4,
+    "fields": {
+      "artist": 2,
+      "price": "10.99",
+      "image": "merch_images/yan-lee-GnZyUqc5bv4-unsplash.jpg",
+      "sales": 0,
+      "dimensions": "A2"
+    }
+  },
+  {
+    "model": "shop.ambient",
+    "pk": 2,
+    "fields": {
+      "name": "Rain on Window",
+      "artist": 3,
+      "genre": "Ambient",
+      "cover_image": "ambient_covers/fireplace.jpg",
+      "preview_clip": "ambient_previews/fireplace.mp3",
+      "release_date": "2024-06-12",
+      "price": "2.99"
+    }
+  },
+  {
+    "model": "shop.ambient",
+    "pk": 3,
+    "fields": {
+      "name": "Night Forest Atmosphere",
+      "artist": 3,
+      "genre": "Ambient",
+      "cover_image": "ambient_covers/fireplace.jpg",
+      "preview_clip": "ambient_previews/fireplace.mp3",
+      "release_date": "2023-11-03",
+      "price": "3.49"
+    }
+  },
+  {
+    "model": "shop.ambient",
+    "pk": 4,
+    "fields": {
+      "name": "Wind Through Mountains",
+      "artist": 3,
+      "genre": "Ambient",
+      "cover_image": "ambient_covers/fireplace.jpg",
+      "preview_clip": "ambient_previews/fireplace.mp3",
+      "release_date": "2024-02-21",
+      "price": "3.29"
+    }
+  },
+  {
+    "model": "shop.ambient",
+    "pk": 5,
+    "fields": {
+      "name": "Distant Thunderstorm",
+      "artist": 3,
+      "genre": "Ambient",
+      "cover_image": "ambient_covers/fireplace.jpg",
+      "preview_clip": "ambient_previews/fireplace.mp3",
+      "release_date": "2024-08-10",
+      "price": "3.99"
+    }
+  }
+]

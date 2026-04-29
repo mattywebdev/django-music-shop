@@ -140,7 +140,7 @@ Example body:
   "price": "3.55",
   "duration": "00:11:23"
 }
-
+'''
 ---
 
 ## 🖼 Demo Media

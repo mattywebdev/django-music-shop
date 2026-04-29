@@ -61,7 +61,7 @@ def albums_api(request):
     # Legacy plain list for callers that expect a list
     return Response(AlbumSerializer(qs, many=True).data)
 
-@api_view(["GET"])
+@api_view(["GET", "POST"])
 def tracks_api(request):
     qs = Track.objects.select_related("artist", "album", "album__genre").all()
 
@@ -72,10 +72,18 @@ def tracks_api(request):
 
     if q:
         qs = qs.filter(Q(title__icontains=q) | Q(artist__name__icontains=q))
-    if artist and artist.isdigit():
-        qs = qs.filter(artist_id=int(artist))
-    if album and album.isdigit():
-        qs = qs.filter(album_id=int(album))
+    if artist:
+        if artist.isdigit():
+            qs = qs.filter(artist_id=int(artist))
+        else:
+            qs = qs.filter(artist__name__icontains=artist)
+
+    if album:
+        if album.isdigit():
+            qs = qs.filter(album_id=int(album))
+        else:
+            qs = qs.filter(album__title__icontains=album)
+
     if ordering in {"title", "-title", "price", "-price"}:
         qs = qs.order_by(ordering)
 
@@ -84,6 +92,13 @@ def tracks_api(request):
         page = paginator.paginate_queryset(qs, request)
         data = TrackSerializer(page, many=True).data
         return paginator.get_paginated_response(data)
+    
+    elif request.method == "POST":
+        serializer = TrackSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
 
     return Response(TrackSerializer(qs, many=True).data)
 

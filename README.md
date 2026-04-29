@@ -100,14 +100,44 @@ Open:
 
 http://127.0.0.1:8000/
 
-## 📡 API Endpoints
+## API Endpoints
 
-```
-/api/albums/
-/api/tracks/
-/api/search_suggest/
-/api/ping/
-```
+### 📀 Albums
+- `GET /api/albums/`  
+  Retrieve all albums
+
+---
+
+### 🎵 Tracks
+- `GET /api/tracks/`  
+  Retrieve all tracks
+
+- `GET /api/tracks/?artist=<id>`  
+  Filter tracks by artist ID
+
+- `GET /api/tracks/?album=<id>`  
+  Filter tracks by album ID
+
+- `GET /api/tracks/?q=<query>`  
+  Search tracks by title or artist name
+
+- `GET /api/tracks/?ordering=price`  
+  Sort tracks (price, -price, title, -title)
+
+---
+
+### ➕ Create Track
+- `POST /api/tracks/`
+
+Example body:
+```json
+{
+  "title": "Santa this summer",
+  "artist_id": 1,
+  "album_id": 5,
+  "price": "3.55",
+  "duration": "00:11:23"
+}
 
 ---
 

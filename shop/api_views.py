@@ -84,7 +84,7 @@ def tracks_api(request):
         else:
             qs = qs.filter(album__title__icontains=album)
 
-    if ordering in {"title", "-title", "price", "-price"}:
+    if ordering in {"title", "-title", "price", "-price","duration", "-duration"}:
         qs = qs.order_by(ordering)
 
     if request.GET.get("page"):

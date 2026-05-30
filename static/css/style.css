@@ -1547,50 +1547,54 @@ input[type="number"] {
 /* grid for the summary: Product | Qty | Total (same widths as cart) */
 .summary-grid{ display:grid; grid-template-columns: 1fr 110px 120px; column-gap:12px; align-items:center; }
 
+
 @media (max-width: 991px) {
 
+    /* Dark floating menu panel */
+    .navbar-collapse {
+        background: rgba(15, 15, 15, 0.97);
+        border-radius: 12px;
+        padding: 1rem;
+        margin-top: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    }
+
+    /* Left align menu items */
     .navbar-nav {
-        gap: 0;
+        align-items: flex-start !important;
+        text-align: left;
+        width: 100%;
     }
 
-    .navbar-nav .nav-item {
-        margin: 0;
-        padding: 0;
-    }
-
+    /* More compact spacing */
     .navbar-nav .nav-link {
         padding: 0.75rem 0;
+        font-size: 1.1rem;
     }
 
-}
+    /* Remove ugly separator */
+    .navbar-nav .nav-item span.nav-link {
+        display: none;
+    }
 
-@media (max-width: 991px) {
-
+    /* Cart row */
     .cart-group {
         display: flex;
-        justify-content: center;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
+        margin: 10px 0;
     }
 
-}
-
-@media (max-width: 991px) {
-
+    /* Smaller logo */
     .custom-navbar-brand {
         font-size: 1.8rem;
     }
 
-}
-
-@media (max-width: 991px) {
-
-    .navbar-collapse {
-        text-align: left;
-    }
-
-    .navbar-nav {
-        align-items: flex-start;
+    /* Keep dropdowns inside menu */
+    .dropdown-menu {
+        background: rgba(25,25,25,.98);
+        border: 1px solid rgba(255,255,255,.1);
+        margin-left: 10px;
     }
 
 }

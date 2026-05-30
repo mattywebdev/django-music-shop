@@ -30,12 +30,15 @@
     <div class="container">
       <a class="navbar-brand custom-navbar-brand" href="{% url 'landing_page' %}">My Music Shop</a>
 
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+      <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="offcanvas"
+                data-bs-target="#mobileMenu"
+                aria-controls="mobileMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarNav">
+      <div class="collapse navbar-collapse d-none d-lg-flex" id="navbarNav">
 
         <!-- Left -->
         <ul class="navbar-nav me-3 w-100">
@@ -151,6 +154,90 @@
       </div>
     </div>
   </nav>
+    <!-- MOBILE OFFCANVAS MENU -->
+  <div class="offcanvas offcanvas-end text-bg-dark"
+       tabindex="-1"
+       id="mobileMenu">
+
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title">My Music Shop</h5>
+
+      <button type="button"
+              class="btn-close btn-close-white"
+              data-bs-dismiss="offcanvas">
+      </button>
+    </div>
+
+    <div class="offcanvas-body">
+
+      <ul class="navbar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'landing_page' %}">
+            Home
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'track_catalog' %}">
+            Music
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'merchandise' %}?category=all">
+            Merchandise
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'about' %}">
+            About Us
+          </a>
+        </li>
+
+        <hr>
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'cart' %}">
+            Cart (£{{ cart_total_price }})
+          </a>
+        </li>
+
+        {% if request.user.is_authenticated %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'account_dashboard' %}">
+              Account
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'logout' %}">
+              Logout
+            </a>
+          </li>
+
+        {% else %}
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'register' %}">
+              Register
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'login' %}">
+              Login
+            </a>
+          </li>
+
+        {% endif %}
+
+      </ul>
+
+    </div>
+  </div>
 </header>
 
   <!-- Optional hero (home page can override this) -->

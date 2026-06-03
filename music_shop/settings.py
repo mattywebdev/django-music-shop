@@ -19,6 +19,7 @@ ALLOWED_HOSTS = [
     "shop.matty-dev.com",
     "localhost",
     "127.0.0.1",
+    "192.168.7.111"
 ]
 
 

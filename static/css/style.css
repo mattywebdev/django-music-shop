@@ -1599,25 +1599,5 @@ input[type="number"] {
 }
 
 .navbar-collapse .nav-link {
-    color: white !important;
-}
-
-@media (max-width: 991px) {
-
-    .offcanvas {
-        width: 280px;
-        background: rgba(15,15,15,.98);
-        backdrop-filter: blur(10px);
-    }
-
-    .offcanvas .nav-link {
-        color: white;
-        font-size: 1.1rem;
-        padding: .75rem 0;
-    }
-
-    .offcanvas .nav-link:hover {
-        color: #ffc107;
-    }
-
+    color: rgb(0, 0, 0) !important;
 }

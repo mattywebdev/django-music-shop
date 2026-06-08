@@ -22,7 +22,7 @@ def account_dashboard(request):
             "title": title,
             "image_url": image_url,
             "price": price,
-            "shop_url": _shop_url_for(f.item_type, title),
+            "shop_url": _shop_url_for(f.item_type, title, f.item_id),
         })
 
     return render(
@@ -80,7 +80,7 @@ def _resolve_item(item_type, item_id):
         try:
             obj = Ambient.objects.select_related("artist").get(pk=item_id)
             title = f"{obj.name} by {obj.artist.name}"
-            image_url = getattr(getattr(obj, "cover_image", None), "url", None) if getattr(obj, "album", None) else None
+            image_url = getattr(getattr(obj, "cover_image", None), "url", None)
             price = getattr(obj, "price", Decimal("0.00"))
         except Ambient.DoesNotExist:
             pass
@@ -88,7 +88,7 @@ def _resolve_item(item_type, item_id):
         try:
             obj = Tshirt.objects.select_related("artist").get(pk=item_id)
             title = f"{obj.artist.name} T-shirt - {obj.size} ({obj.color})"
-            image_url = getattr(getattr(obj, "image", None), "url", None) if getattr(obj, "album", None) else None
+            image_url = getattr(getattr(obj, "image", None), "url", None)
             price = getattr(obj, "price", Decimal("0.00"))
         except Tshirt.DoesNotExist:
             pass
@@ -96,7 +96,7 @@ def _resolve_item(item_type, item_id):
         try:
             obj = Vinyl.objects.select_related("artist").get(pk=item_id)
             title = f"{obj.artist.name} Vinyl - {obj.edition} ({obj.release_year})"
-            image_url = getattr(getattr(obj, "image", None), "url", None) if getattr(obj, "album", None) else None
+            image_url = getattr(getattr(obj, "image", None), "url", None)
             price = getattr(obj, "price", Decimal("0.00"))
         except Vinyl.DoesNotExist:
             pass
@@ -104,7 +104,7 @@ def _resolve_item(item_type, item_id):
         try:
             obj = Poster.objects.select_related("artist").get(pk=item_id)
             title = f"{obj.artist.name} Poster - {obj.dimensions}"
-            image_url = getattr(getattr(obj, "image", None), "url", None) if getattr(obj, "album", None) else None
+            image_url = getattr(getattr(obj, "image", None), "url", None)
             price = getattr(obj, "price", Decimal("0.00"))
         except Poster.DoesNotExist:
             pass

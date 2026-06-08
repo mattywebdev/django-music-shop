@@ -3,156 +3,102 @@
 {% block title %}Your Cart{% endblock %}
 
 {% block content %}
-<div class="cart-container">
-    <h2 class="cart-title">Your Cart (items: {{ total_quantity }})</h2>
+<section class="cart-page">
+    <div class="cart-page-head">
+        <div>
+            <p class="cart-kicker">Ready when you are</p>
+            <h1 class="cart-page-title">Your Cart</h1>
+        </div>
+        <div class="cart-count-pill">
+            <strong>{{ total_quantity }}</strong>
+            <span>{% if total_quantity == 1 %}item{% else %}items{% endif %}</span>
+        </div>
+    </div>
 
     {% if request.session.cart %}
-        <!-- Start the form that wraps all items -->
-        <form id="cart-update-form" method="post" action="{% url 'update_cart_all' %}" class="cart-form">
-            {% csrf_token %}
-            <table class="cart-table">
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th></th>
-                        <th>Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for album_id, item in request.session.cart.items %}
-                        <tr>
-                            <!-- Product -->
-                            <td class="cart-item">
-                                <img src="{{ item.icon_url }}" alt="{{ item.title }}" class="album-icon">
-                                <span class="cart-item-title" data-tooltip="{{ item.title }}">{{ item.title }}</span>
-                            </td>
+        <div class="cart-layout">
+            <form id="cart-update-form" method="post" action="{% url 'update_cart_all' %}" class="cart-list-panel">
+                {% csrf_token %}
+                <div class="cart-list-head">
+                    <span>Product</span>
+                    <span>Quantity</span>
+                    <span>Total</span>
+                </div>
 
-                            <!-- Quantity -->
-                            <td class="cart-item-quantity">
-                                <div class="quantity-controls">
-                                <button type="button" class="btn-quantity minus" data-tooltip="decrease amount">−</button>
-                                <input type="number" name="quantity_{{ album_id }}" value="{{ item.quantity }}" min="1"
-                                        class="quantity-input" data-price="{{ item.price }}" data-album-id="{{ album_id }}">
-                                <button type="button" class="btn-quantity plus" data-tooltip="add more">+</button>
-                                </div> 
+                <div class="cart-item-list">
+                    {% for item_key, item in cart_items.items %}
+                        <article class="cart-line-item">
+                            <div class="cart-product">
+                                <img src="{{ item.icon_url }}" alt="{{ item.title }}" class="cart-product-image">
+                                <div class="cart-product-copy">
+                                    <span class="cart-product-type">{{ item.type }}</span>
+                                    <h2>{{ item.title }}</h2>
+                                    <p>£{{ item.price|floatformat:2 }} each</p>
+                                </div>
+                            </div>
 
-                            </td>
-                            <!-- Delete (own cell) -->
-                            <td class="cart-item-remove">
-                                <a href="{% url 'remove_from_cart' item_type=item.type item_id=item.id %}"
-                                class="delete-link" title="Remove">Delete</a>
-                            </td>
+                            <div class="cart-quantity">
+                                <button type="button" class="cart-qty-btn minus" data-action="decrease" aria-label="Decrease {{ item.title }} quantity">−</button>
+                                <input type="number"
+                                       name="quantity_{{ item_key }}"
+                                       value="{{ item.quantity }}"
+                                       min="1"
+                                       class="quantity-input cart-qty-input"
+                                       data-price="{{ item.price }}"
+                                       aria-label="{{ item.title }} quantity">
+                                <button type="button" class="cart-qty-btn plus" data-action="increase" aria-label="Increase {{ item.title }} quantity">+</button>
+                            </div>
 
-                            <!-- Line total -->
-                            <td class="cart-item-price">
-                                £<span class="price">{{ item.total_price|floatformat:2 }}</span>
-                            </td>
-                        </tr>
+                            <div class="cart-line-total">
+                                <strong>£<span class="price">{{ item.total_price|floatformat:2 }}</span></strong>
+                                <a href="{% url 'remove_from_cart' item_type=item.type item_id=item.id %}" class="cart-remove-link" aria-label="Remove {{ item.title }}">
+                                    <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
+                                    <span>Remove</span>
+                                </a>
+                            </div>
+                        </article>
                     {% endfor %}
-                </tbody>
-            </table>
-            <div class="cart-summary">
-                <div class="cart-total-price">
-                    Total price: £{{ total_price|floatformat:2 }}
                 </div>
-                <div class="cart-total-items">
-                    Total items: {{ total_quantity }}
+
+                <span id="cart-status" class="cart-status" hidden>
+                    <span class="cart-status-text">Updating cart...</span>
+                </span>
+            </form>
+
+            <aside class="cart-summary-panel">
+                <div class="cart-summary-card">
+                    <p class="cart-summary-label">Order summary</p>
+                    <div class="cart-summary-row">
+                        <span>Subtotal</span>
+                        <strong>£<span id="cart-summary-total">{{ total_price|floatformat:2 }}</span></strong>
+                    </div>
+                    <div class="cart-summary-row">
+                        <span>Items</span>
+                        <strong id="cart-summary-count">{{ total_quantity }}</strong>
+                    </div>
+                    <div class="cart-summary-row">
+                        <span>Shipping</span>
+                        <strong>£0.00</strong>
+                    </div>
+                    <div class="cart-summary-total">
+                        <span>Total</span>
+                        <strong>£<span id="cart-summary-grand-total">{{ total_price|floatformat:2 }}</span></strong>
+                    </div>
+                    <a href="{% url 'checkout' %}" class="cart-checkout-btn">
+                        <i class="fa-solid fa-lock" aria-hidden="true"></i>
+                        <span>Proceed to checkout</span>
+                    </a>
+                    <a href="{% url 'catalog' %}" class="cart-continue-link">Continue shopping</a>
                 </div>
-            </div>
-        </form>
-            <div class="cart-actions">
-            <!-- Update Cart (now above checkout) -->
-            <span id="cart-status" class="cart-status" hidden>Updating…</span>
-            <!-- Proceed to Checkout (below, main CTA) -->
-            <a href="{% url 'checkout' %}" class="btn btn-checkout" data-tooltip="Go to checkout">
-                Proceed to Checkout
-            </a>
-            </div>
+            </aside>
+        </div>
     {% else %}
-        <p class="empty-cart">Your cart is empty.</p>
+        <div class="cart-empty-state">
+            <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+            <h2>Your cart is empty</h2>
+            <p>Browse albums, tracks, ambient releases, or merch and add something you like.</p>
+            <a href="{% url 'catalog' %}" class="cart-checkout-btn">Start shopping</a>
+        </div>
     {% endif %}
-</div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const totalCartCount = document.querySelector('#nav-cart-count');
-        const totalCartPrice = document.querySelector('#nav-cart-total');
-
-        document.querySelectorAll('.cart-item-quantity').forEach(itemQuantity => {
-            const minusButton = itemQuantity.querySelector('.minus');
-            const plusButton = itemQuantity.querySelector('.plus');
-            const quantityInput = itemQuantity.querySelector('.quantity-input');
-            const priceElement = itemQuantity.closest('tr').querySelector('.price');
-            const basePrice = parseFloat(quantityInput.dataset.price);
-
-            minusButton.addEventListener('click', () => {
-                let quantity = parseInt(quantityInput.value);
-                if (quantity > 1) {
-                    quantity -= 1;
-                    quantityInput.value = quantity;
-                    updatePrice(quantity, basePrice, priceElement);
-                    updateCartSummary();
-                }
-            });
-
-            plusButton.addEventListener('click', () => {
-                let quantity = parseInt(quantityInput.value);
-                quantity += 1;
-                quantityInput.value = quantity;
-                updatePrice(quantity, basePrice, priceElement);
-                updateCartSummary();
-            });
-
-            quantityInput.addEventListener('input', () => {
-                let quantity = parseInt(quantityInput.value);
-                if (quantity < 1) quantity = 1;
-                quantityInput.value = quantity;
-                updatePrice(quantity, basePrice, priceElement);
-                updateCartSummary();
-            });
-
-            function updatePrice(quantity, basePrice, priceElement) {
-                const newPrice = (quantity * basePrice).toFixed(2);
-                priceElement.textContent = newPrice;
-            }
-
-            function updateCartSummary() {
-                let totalItems = 0;
-                let totalPrice = 0;
-
-                document.querySelectorAll('.quantity-input').forEach(input => {
-                    totalItems += parseInt(input.value);
-                    totalPrice += parseFloat(input.value) * parseFloat(input.dataset.price);
-                });
-
-                totalCartCount.textContent = totalItems;
-                totalCartPrice.textContent = totalPrice.toFixed(2);
-            }
-              const f = document.getElementById('cart-update-form');
-                document.querySelectorAll('.btn-quantity, .quantity-input').forEach(el => {
-                    el.addEventListener('click', () => f.requestSubmit());
-                    el.addEventListener('change', () => f.requestSubmit());
-                });
-
-                const form = document.getElementById('cart-update-form');
-                const statusEl = document.getElementById('cart-status');
-
-                function submitCartDebounced(){
-                if (statusEl) statusEl.hidden = false;
-                clearTimeout(window.__cartT);
-                window.__cartT = setTimeout(() => {
-                    form.requestSubmit();
-                    setTimeout(() => { if (statusEl) statusEl.hidden = true; }, 300); // hide shortly after submit
-                }, 300);
-                }
-
-                document.querySelectorAll('.btn-quantity, .quantity-input').forEach(el => {
-                el.addEventListener('click', submitCartDebounced);
-                el.addEventListener('change', submitCartDebounced);
-                });
-        });
-    });
-</script>
-
+</section>
 {% endblock %}

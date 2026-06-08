@@ -14,6 +14,7 @@ from .models import (
 # If you keep the DRF view below, these are needed:
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.core.paginator import Paginator
 
 def _safe_file_url(filefield, default=""):
     try:
@@ -399,8 +400,13 @@ def update_cart_all(request):
 
 def track_catalog(request):
     q = (request.GET.get("q") or "").strip()
-    exact = request.GET.get("exact")  # when present, show only exact title matches
-    tracks = Track.objects.select_related("album", "artist", "album__genre")
+    exact = request.GET.get("exact")
+
+    tracks = Track.objects.select_related(
+        "album",
+        "artist",
+        "album__genre"
+    )
 
     if q:
         if exact:
@@ -412,7 +418,18 @@ def track_catalog(request):
                 Q(album__title__icontains=q)
             )
 
-    return render(request, "shop/track_catalog.html", {"tracks": tracks, "q": q})
+    paginator = Paginator(tracks, 12)  # 12 tracks per page
+    page_number = request.GET.get("page")
+    tracks = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "shop/track_catalog.html",
+        {
+            "tracks": tracks,
+            "q": q,
+        }
+    )
 
 def landing_page(request):
     trending_albums = Album.objects.order_by('-sales')[:5]

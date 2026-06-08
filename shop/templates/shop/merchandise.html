@@ -2,92 +2,133 @@
 {% load custom_filters %}
 
 {% block content %}
-<div class="container">  <!-- optional but gives a nice max-width + centering -->
-  <h1>Merchandise</h1>
+<section class="merch-page">
+  <div class="merch-head">
+    <div>
+      <p class="merch-kicker">Store goods</p>
+      <h1 class="merch-page-title">Merchandise</h1>
+    </div>
+    <form class="merch-search" method="get" action="{% url 'merchandise' %}">
+      <input type="hidden" name="category" value="{{ category|default:'all' }}">
+      <i class="fa-solid fa-shirt" aria-hidden="true"></i>
+      <input type="search" name="q" value="{{ q|default:'' }}" placeholder="Search merch or artists">
+    </form>
+  </div>
 
-  <nav class="merch-nav mb-3">
-    <a href="?category=all" class="btn btn-dark btn-sm">All</a>
-    <a href="?category=tshirt" class="btn btn-dark btn-sm">T-Shirts</a>
-    <a href="?category=vinyl" class="btn btn-dark btn-sm">Vinyls</a>
-    <a href="?category=poster" class="btn btn-dark btn-sm">Posters</a>
+  <nav class="merch-tabs" aria-label="Merchandise categories">
+    <a href="?category=all" class="{% if category == 'all' %}is-active{% endif %}">All</a>
+    <a href="?category=tshirt" class="{% if category == 'tshirt' %}is-active{% endif %}">T-shirts</a>
+    <a href="?category=vinyl" class="{% if category == 'vinyl' %}is-active{% endif %}">Vinyl</a>
+    <a href="?category=poster" class="{% if category == 'poster' %}is-active{% endif %}">Posters</a>
   </nav>
 
-  <!-- Bootstrap grid controls how many per row -->
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 g-4">
-
+  <div class="merch-grid">
     {% for product in products %}
       {% if product|instance_of:'Tshirt' %}
         {% with 'tshirt' as type %}
-        <div class="col">
-          <div class="card merch-card h-100">
-            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product }}">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ product }}</h5>
-              <p class="card-text mb-3">Price: £{{ product.price }}</p>
-
-              <div class="mt-auto d-flex gap-2">
-                <a href="{% url 'add_to_cart' type product.id %}" class="btn btn-primary">Add to Cart</a>
-                {% is_favorite request.user type product.id as fav %}
-                <form method="post" action="{% url 'toggle_favorite' type product.id %}">
-                  {% csrf_token %}
-                  <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
-                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
-                  </button>
-                </form>
+        <article class="merch-product-card" id="merch-{{ type }}-{{ product.id }}">
+          <div class="merch-image-wrap">
+            <img src="{{ product.image.url }}" class="merch-image" alt="{{ product }}">
+            <span class="merch-type">T-shirt</span>
+          </div>
+          <div class="merch-body">
+            <div class="merch-title-row">
+              <div>
+                <h2 class="merch-title">{{ product.artist.name }} T-shirt</h2>
+                <p class="merch-subtitle">{{ product.color }} / {{ product.size }}</p>
               </div>
+              <strong class="merch-price">£{{ product.price }}</strong>
+            </div>
+            <div class="merch-detail-grid">
+              <span><b>Size</b>{{ product.size }}</span>
+              <span><b>Color</b>{{ product.color }}</span>
+            </div>
+            <div class="merch-actions">
+              <a href="{% url 'add_to_cart' type product.id %}" class="merch-buy-btn"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i><span>Add merch</span></a>
+              {% is_favorite request.user type product.id as fav %}
+              <form method="post" action="{% url 'toggle_favorite' type product.id %}">
+                {% csrf_token %}
+                <button class="merch-fav-btn {% if fav %}is-favorite{% endif %}" type="submit" title="{% if fav %}Remove from favourites{% else %}Add to favourites{% endif %}" aria-label="{% if fav %}Remove {{ product }} from favourites{% else %}Add {{ product }} to favourites{% endif %}">
+                  <i class="fa-{% if fav %}solid{% else %}regular{% endif %} fa-heart" aria-hidden="true"></i>
+                </button>
+              </form>
             </div>
           </div>
-        </div>
+        </article>
         {% endwith %}
 
       {% elif product|instance_of:'Vinyl' %}
         {% with 'vinyl' as type %}
-        <div class="col">
-          <div class="card merch-card h-100">
-            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product }}">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ product }}</h5>
-              <p class="card-text mb-3">Price: £{{ product.price }}</p>
-              <div class="mt-auto d-flex gap-2">
-                <a href="{% url 'add_to_cart' type product.id %}" class="btn btn-primary">Add to Cart</a>
-                {% is_favorite request.user type product.id as fav %}
-                <form method="post" action="{% url 'toggle_favorite' type product.id %}">
-                  {% csrf_token %}
-                  <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
-                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
-                  </button>
-                </form>
+        <article class="merch-product-card merch-product-card--vinyl" id="merch-{{ type }}-{{ product.id }}">
+          <div class="merch-image-wrap">
+            <img src="{{ product.image.url }}" class="merch-image" alt="{{ product }}">
+            <span class="merch-type">Vinyl</span>
+          </div>
+          <div class="merch-body">
+            <div class="merch-title-row">
+              <div>
+                <h2 class="merch-title">{{ product.artist.name }} Vinyl</h2>
+                <p class="merch-subtitle">{{ product.edition }}</p>
               </div>
+              <strong class="merch-price">£{{ product.price }}</strong>
+            </div>
+            <div class="merch-detail-grid">
+              <span><b>Edition</b>{{ product.edition }}</span>
+              <span><b>Year</b>{{ product.release_year }}</span>
+            </div>
+            <div class="merch-actions">
+              <a href="{% url 'add_to_cart' type product.id %}" class="merch-buy-btn"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i><span>Add merch</span></a>
+              {% is_favorite request.user type product.id as fav %}
+              <form method="post" action="{% url 'toggle_favorite' type product.id %}">
+                {% csrf_token %}
+                <button class="merch-fav-btn {% if fav %}is-favorite{% endif %}" type="submit" title="{% if fav %}Remove from favourites{% else %}Add to favourites{% endif %}" aria-label="{% if fav %}Remove {{ product }} from favourites{% else %}Add {{ product }} to favourites{% endif %}">
+                  <i class="fa-{% if fav %}solid{% else %}regular{% endif %} fa-heart" aria-hidden="true"></i>
+                </button>
+              </form>
             </div>
           </div>
-        </div>
+        </article>
         {% endwith %}
 
       {% elif product|instance_of:'Poster' %}
         {% with 'poster' as type %}
-        <div class="col">
-          <div class="card merch-card h-100">
-            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product }}">
-            <div class="card-body d-flex flex-column">
-              <h5 class="card-title">{{ product }}</h5>
-              <p class="card-text mb-3">Price: £{{ product.price }}</p>
-              <div class="mt-auto d-flex gap-2">
-                <a href="{% url 'add_to_cart' type product.id %}" class="btn btn-primary">Add to Cart</a>
-                {% is_favorite request.user type product.id as fav %}
-                <form method="post" action="{% url 'toggle_favorite' type product.id %}">
-                  {% csrf_token %}
-                  <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
-                    {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
-                  </button>
-                </form>
+        <article class="merch-product-card merch-product-card--poster" id="merch-{{ type }}-{{ product.id }}">
+          <div class="merch-image-wrap">
+            <img src="{{ product.image.url }}" class="merch-image" alt="{{ product }}">
+            <span class="merch-type">Poster</span>
+          </div>
+          <div class="merch-body">
+            <div class="merch-title-row">
+              <div>
+                <h2 class="merch-title">{{ product.artist.name }} Poster</h2>
+                <p class="merch-subtitle">{{ product.dimensions }} print</p>
               </div>
+              <strong class="merch-price">£{{ product.price }}</strong>
+            </div>
+            <div class="merch-detail-grid">
+              <span><b>Format</b>Poster</span>
+              <span><b>Size</b>{{ product.dimensions }}</span>
+            </div>
+            <div class="merch-actions">
+              <a href="{% url 'add_to_cart' type product.id %}" class="merch-buy-btn"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i><span>Add merch</span></a>
+              {% is_favorite request.user type product.id as fav %}
+              <form method="post" action="{% url 'toggle_favorite' type product.id %}">
+                {% csrf_token %}
+                <button class="merch-fav-btn {% if fav %}is-favorite{% endif %}" type="submit" title="{% if fav %}Remove from favourites{% else %}Add to favourites{% endif %}" aria-label="{% if fav %}Remove {{ product }} from favourites{% else %}Add {{ product }} to favourites{% endif %}">
+                  <i class="fa-{% if fav %}solid{% else %}regular{% endif %} fa-heart" aria-hidden="true"></i>
+                </button>
+              </form>
             </div>
           </div>
-        </div>
+        </article>
         {% endwith %}
       {% endif %}
+    {% empty %}
+      <div class="merch-empty">
+        <h2>No merchandise found</h2>
+        <p>Try another category or search.</p>
+      </div>
     {% endfor %}
-
   </div>
-</div>
+</section>
 {% endblock %}

@@ -4,48 +4,75 @@
 {% block title %}Ambient music{% endblock %}
 
 {% block content %}
+<section class="ambient-page">
+    <div class="ambient-head">
+        <div>
+            <p class="ambient-kicker">Soundscapes</p>
+            <h2 class="ambient-page-title">Ambient Selection</h2>
+        </div>
+        <p class="ambient-note">Loopable atmospheres, room tones, and focus beds.</p>
+    </div>
 
-
-<h2 class="album-catalog-header">Ambient selection</h2>
-<div class="row">
+<div class="ambient-grid">
     {% for ambient in ambients %}
-        <div class="col-md-4" id="ambient-{{ ambient.id }}">  {# anchor so /ambient/#ambient-12 scrolls here #}
-            <div class="card mb-4">
-                <img src="{{ ambient.cover_image.url }}" class="card-img-top" alt="{{ ambient.title }}">
-                <div class="card-body">
-                    {# If your model uses 'title', keep title; if it’s 'name', keep name #}
-                    <h5 class="card-title">{{ ambient.title }}</h5>
-                    <p class="card-text">Artist: {{ ambient.artist.name }}</p>
-                    <p class="card-text">Genre: {{ ambient.genre }}</p>
-                    <p class="card-text">Release date: {{ ambient.release_date }}</p>
-                    <p class="card-text">Price: £{{ ambient.price }}</p>
+        <article class="ambient-card" id="ambient-{{ ambient.id }}">
+            <div class="ambient-art-panel">
+                <img src="{{ ambient.cover_image.url }}" class="ambient-art" alt="{{ ambient.name }} cover">
+                <div class="ambient-price">
+                    <span>Loop</span>
+                    <strong>£{{ ambient.price }}</strong>
+                </div>
+            </div>
 
-                    <div class="d-flex gap-2 align-items-center mb-2">
-                        <!-- Add to Cart -->
-                        <a href="{% url 'add_to_cart' 'ambient' ambient.id %}" class="btn btn-primary">Add to Cart</a>
-
-                        <!-- ♥ Toggle -->
-                        {% is_favorite request.user 'ambient' ambient.id as fav %}
-                        <form method="post" action="{% url 'toggle_favorite' 'ambient' ambient.id %}" class="d-inline">
-                            {% csrf_token %}
-                            <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
-                                {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
-                            </button>
-                        </form>
+            <div class="ambient-body">
+                <div class="ambient-title-row">
+                    <div>
+                        <h3 class="ambient-title">{{ ambient.name }}</h3>
+                        <p class="ambient-artist">{{ ambient.artist.name }}</p>
                     </div>
+                    <span class="ambient-genre">{{ ambient.genre }}</span>
+                </div>
 
+                <div class="ambient-meta">
+                    <span><i class="fa-regular fa-calendar" aria-hidden="true"></i>{{ ambient.release_date|date:"M j, Y" }}</span>
+                    <span><i class="fa-solid fa-wave-square" aria-hidden="true"></i>Atmosphere</span>
+                </div>
 
-                    <!-- WaveSurfer Preview Player -->
-                    <div class="waveform-player">
-                        <div id="waveform-{{ ambient.id }}" style="height: 80px;"></div>
-                        <button id="play-button-{{ ambient.id }}" class="btn btn-secondary" onclick="togglePlay('{{ ambient.id }}')">Play Preview</button>
-                        <span id="time-display-{{ ambient.id }}">0:00</span>
+                <div class="ambient-actions">
+                    <a href="{% url 'add_to_cart' 'ambient' ambient.id %}" class="ambient-buy-btn">
+                        <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+                        <span>Add ambience</span>
+                    </a>
+
+                    {% is_favorite request.user 'ambient' ambient.id as fav %}
+                    <form method="post" action="{% url 'toggle_favorite' 'ambient' ambient.id %}">
+                        {% csrf_token %}
+                        <button class="ambient-fav-btn {% if fav %}is-favorite{% endif %}" type="submit" title="{% if fav %}Remove from favourites{% else %}Add to favourites{% endif %}" aria-label="{% if fav %}Remove {{ ambient.name }} from favourites{% else %}Add {{ ambient.name }} to favourites{% endif %}">
+                            <i class="fa-{% if fav %}solid{% else %}regular{% endif %} fa-heart" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="ambient-player">
+                    <div id="waveform-{{ ambient.id }}" class="ambient-waveform"></div>
+                    <div class="ambient-player-row">
+                        <button id="play-button-{{ ambient.id }}" class="ambient-play-btn" onclick="togglePlay('{{ ambient.id }}')" type="button">
+                            <i class="fa-solid fa-play" aria-hidden="true"></i>
+                            <span>Preview</span>
+                        </button>
+                        <span id="time-display-{{ ambient.id }}" class="ambient-time">0:00</span>
                     </div>
                 </div>
             </div>
+        </article>
+    {% empty %}
+        <div class="ambient-empty">
+            <h3>No ambient releases found</h3>
+            <p>Add an ambient item to make this section sing quietly.</p>
         </div>
     {% endfor %}
 </div>
+</section>
 
 <script src="https://unpkg.com/wavesurfer.js"></script>
 
@@ -56,28 +83,11 @@
         {% for ambient in ambients %}
             {
                 id: '{{ ambient.id }}',
-                previewClipUrl: '{{ ambient.preview_clip.url }}'
+                previewClipUrl: '{% if ambient.preview_clip %}{{ ambient.preview_clip.url }}{% endif %}'
             }{% if not forloop.last %},{% endif %}
         {% endfor %}
     ];
     // Convert the object to a JSON string and set it in a hidden element
     document.write('<script id="track-data" type="application/json">' + JSON.stringify(trackData) + '</' + 'script>');
 </script>
-
-<style>
-    .progress {
-        background-color: #f3f3f3;
-        border-radius: 5px;
-        height: 10px;
-        width: 100%;
-        margin-top: 5px;
-        cursor: pointer;
-    }
-    .progress-bar {
-        background-color: #007bff;
-        height: 100%;
-        border-radius: 5px;
-        transition: width 0.1s;
-    }
-</style>
 {% endblock content %}

@@ -81,7 +81,7 @@ python manage.py migrate
 
 ### 5. Load demo data
 ```bash
-python manage.py loaddata demo_store_data_final.json
+python manage.py loaddata demo_store_data_professional.json
 ```
 This will populate the store with:
 
@@ -89,6 +89,8 @@ This will populate the store with:
 - tracks
 - ambient sounds
 - merchandise
+
+The original starter fixture is still available as `demo_store_data_final.json`.
 
 ---
 

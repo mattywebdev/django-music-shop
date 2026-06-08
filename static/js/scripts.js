@@ -58,10 +58,11 @@ function createPlaceholderWaveform(containerId) {
     const placeholder = document.createElement('div');
     placeholder.className = 'placeholder-wave';
 
-    // Create multiple bars for the placeholder effect
-    for (let i = 0; i < 8; i++) {
+    // Create enough bars to read like a real loading waveform.
+    for (let i = 0; i < 24; i++) {
         const bar = document.createElement('div');
         bar.className = 'bar';
+        bar.style.height = `${24 + ((i * 17) % 58)}%`;
         placeholder.appendChild(bar);
     }
 
@@ -77,10 +78,13 @@ function initializeWaveSurfers(trackData) {
 
         const waveSurfer = WaveSurfer.create({
             container: `#waveform-${track.id}`,
-            waveColor: 'violet',
-            progressColor: 'purple',
-            height: 80,
-            barWidth: 2
+            waveColor: 'rgba(124, 200, 255, .55)',
+            progressColor: '#9ee493',
+            cursorColor: 'rgba(255,255,255,.75)',
+            height: 58,
+            barWidth: 2,
+            barGap: 2,
+            barRadius: 2
         });
         
         waveSurfer.load(track.previewClipUrl);
@@ -108,10 +112,10 @@ function togglePlay(trackId) {
 
     if (waveSurfer.isPlaying()) {
         waveSurfer.pause();
-        playButton.textContent = 'Play Preview';
+        playButton.innerHTML = '<i class="fa-solid fa-play" aria-hidden="true"></i><span>Play</span>';
     } else {
         waveSurfer.play();
-        playButton.textContent = 'Pause Preview';
+        playButton.innerHTML = '<i class="fa-solid fa-pause" aria-hidden="true"></i><span>Pause</span>';
 
         // Update time display as audio plays
         waveSurfer.on('audioprocess', () => {
@@ -121,7 +125,7 @@ function togglePlay(trackId) {
 
         // Reset UI on finish
         waveSurfer.on('finish', () => {
-            playButton.textContent = 'Play Preview';
+            playButton.innerHTML = '<i class="fa-solid fa-play" aria-hidden="true"></i><span>Play</span>';
             timeDisplay.textContent = '0:00';
             waveSurfer.seekTo(0);
         });
@@ -187,43 +191,100 @@ document.addEventListener('DOMContentLoaded', () => {
 })();
 
 document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('cart-update-form');   // make sure your <form> has this id
+  const form = document.getElementById('cart-update-form');
+  if (!form) return;
+
   const statusBox = document.getElementById('cart-status');
-  if (!form || !statusBox) return;
+  const summaryTotal = document.getElementById('cart-summary-total');
+  const summaryGrandTotal = document.getElementById('cart-summary-grand-total');
+  const summaryCount = document.getElementById('cart-summary-count');
+  const navCartTotal = document.getElementById('nav-cart-total');
+  const navCartBadge = document.querySelector('.nav-cart-circle');
+  let submitTimer;
+  let hideTimer;
+  let isSubmitting = false;
 
-  let submitTimer, hideTimer, isSubmitting = false;
+  function money(value) {
+    return Number(value || 0).toFixed(2);
+  }
 
-  // tweak these two to taste
-  const SHOW_MS = 1600;        // how long the toast stays visible
-  const SUBMIT_DELAY_MS = 900; // delay before we actually submit
-
-  function showStatus(text = 'Updating cart…') {
-    const t = statusBox.querySelector('.cart-status-text');
-    if (t) t.textContent = text;
-
+  function showStatus(text = 'Updating cart...') {
+    if (!statusBox) return;
+    const label = statusBox.querySelector('.cart-status-text');
+    if (label) label.textContent = text;
     statusBox.hidden = false;
     statusBox.classList.add('show');
 
     clearTimeout(hideTimer);
     hideTimer = setTimeout(() => {
       statusBox.classList.remove('show');
-      setTimeout(() => (statusBox.hidden = true), 5400);
-    }, SHOW_MS);
+      setTimeout(() => {
+        statusBox.hidden = true;
+      }, 250);
+    }, 1400);
+  }
+
+  function recalculateCart() {
+    let totalItems = 0;
+    let totalPrice = 0;
+
+    form.querySelectorAll('.cart-line-item').forEach(row => {
+      const input = row.querySelector('.cart-qty-input');
+      const linePrice = row.querySelector('.price');
+      if (!input || !linePrice) return;
+
+      const quantity = Math.max(1, parseInt(input.value, 10) || 1);
+      const unitPrice = parseFloat(input.dataset.price || '0');
+      input.value = quantity;
+      totalItems += quantity;
+      totalPrice += quantity * unitPrice;
+      linePrice.textContent = money(quantity * unitPrice);
+    });
+
+    if (summaryTotal) summaryTotal.textContent = money(totalPrice);
+    if (summaryGrandTotal) summaryGrandTotal.textContent = money(totalPrice);
+    if (summaryCount) summaryCount.textContent = totalItems;
+    if (navCartTotal) navCartTotal.textContent = money(totalPrice);
+    if (navCartBadge) {
+      navCartBadge.textContent = totalItems;
+      navCartBadge.dataset.count = String(totalItems);
+    }
   }
 
   function queueSubmit() {
     clearTimeout(submitTimer);
-    showStatus(); // show immediately
-
+    showStatus();
     submitTimer = setTimeout(() => {
-      if (isSubmitting) return;  // prevent double-submit
+      if (isSubmitting) return;
       isSubmitting = true;
-      form.requestSubmit();      // page reload happens after this
-    }, SUBMIT_DELAY_MS);
+      form.requestSubmit();
+    }, 850);
   }
 
-  document.querySelectorAll('.btn-quantity, .quantity-input').forEach(el => {
-    el.addEventListener('click', queueSubmit);
-    el.addEventListener('change', queueSubmit);
+  form.querySelectorAll('.cart-qty-btn').forEach(button => {
+    button.addEventListener('click', () => {
+      const row = button.closest('.cart-line-item');
+      const input = row ? row.querySelector('.cart-qty-input') : null;
+      if (!input) return;
+
+      const current = Math.max(1, parseInt(input.value, 10) || 1);
+      input.value = button.dataset.action === 'increase'
+        ? current + 1
+        : Math.max(1, current - 1);
+
+      recalculateCart();
+      queueSubmit();
+    });
+  });
+
+  form.querySelectorAll('.cart-qty-input').forEach(input => {
+    input.addEventListener('input', () => {
+      recalculateCart();
+      queueSubmit();
+    });
+    input.addEventListener('change', () => {
+      recalculateCart();
+      queueSubmit();
+    });
   });
 });

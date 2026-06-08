@@ -2,7 +2,13 @@
 {% static 'images/placeholder.png' as placeholder_icon %}
 
 <div id="cart-dropdown" class="cart-dd">
-  <div class="cd-head">Your cart</div>
+  <div class="cd-head">
+    <div>
+      <span>Mini cart</span>
+      <strong>Your cart</strong>
+    </div>
+    <em>{{ cart_count }}</em>
+  </div>
 
   {% if request.session.cart %}
     <div class="cd-items">
@@ -12,17 +18,18 @@
                src="{{ item.icon_url|default:placeholder_icon }}"
                alt="{{ item.title }}">
 
-          <div class="cd-title" title="{{ item.title }}">{{ item.title }}</div>
-          <div class="cd-meta">Qty: {{ item.quantity }}</div>
+          <div class="cd-copy">
+            <span class="cd-type">{{ item.type }}</span>
+            <div class="cd-title" title="{{ item.title }}">{{ item.title }}</div>
+            <div class="cd-meta">Qty {{ item.quantity }} · £{{ item.price|floatformat:2 }} each</div>
+          </div>
+
           <div class="cd-line">£{{ item.total_price|floatformat:2 }}</div>
 
           <a class="cd-remove"
              href="{% url 'remove_from_cart' item_type=item.type item_id=item.id %}"
              aria-label="Remove {{ item.title }}" title="Remove">
-            <svg viewBox="0 0 448 512" width="14" height="14" aria-hidden="true">
-              <path fill="currentColor"
-                    d="M135.2 17.7C140.2 7.3 150.7 0 162.3 0h123.4c11.6 0 22.1 7.3 27.1 17.7L328 32H432c8.8 0 16 7.2 16 16s-7.2 16-16 16H16C7.2 64 0 56.8 0 48S7.2 32 16 32H120l15.2-14.3zM32 128h384l-21.2 339.2C393.9 490 377.2 504 357.9 504H90.1c-19.3 0-36-14-37-36.8L32 128zm120 64c-8.8 0-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm72 0c-8.8 0-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm72 0c-8.8 0-16 7.2-16 16v224c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"/>
-            </svg>
+            <i class="fa-regular fa-trash-can" aria-hidden="true"></i>
           </a>
         </div>
       {% endfor %}
@@ -30,16 +37,26 @@
 
     <div class="cd-footer">
       <div class="cd-total">
-        <span>Total</span>
+        <span>Subtotal</span>
         <strong>£<span id="cd-total">{{ cart_total_price }}</span></strong>
       </div>
       <div class="cd-actions">
-        <a href="{% url 'cart' %}" class="cd-btn cd-btn--ghost">View cart</a>
-        <a href="{% url 'checkout' %}" class="cd-btn">Checkout</a>
+        <a href="{% url 'cart' %}" class="cd-btn cd-btn--ghost">
+          <i class="fa-solid fa-basket-shopping" aria-hidden="true"></i>
+          <span>View cart</span>
+        </a>
+        <a href="{% url 'checkout' %}" class="cd-btn">
+          <i class="fa-solid fa-lock" aria-hidden="true"></i>
+          <span>Checkout</span>
+        </a>
       </div>
     </div>
 
   {% else %}
-    <div class="cd-empty">Your cart is empty</div>
+    <div class="cd-empty">
+      <i class="fa-solid fa-cart-shopping" aria-hidden="true"></i>
+      <strong>Your cart is empty</strong>
+      <span>Browse the store and add something you like.</span>
+    </div>
   {% endif %}
 </div>

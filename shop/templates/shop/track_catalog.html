@@ -5,45 +5,98 @@
 
 {% block content %}
 
-    <h2 class="album-catalog-header">Track Catalog</h2>
-    <div class="row">
+<section class="track-catalog-page">
+    <div class="track-catalog-head">
+        <div>
+            <p class="track-kicker">Digital tracks</p>
+            <h2 class="track-page-title">Track Catalog</h2>
+        </div>
+        <form class="track-search" method="get" action="{% url 'track_catalog' %}">
+            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+            <input type="search" name="q" value="{{ q }}" placeholder="Search tracks, artists, albums">
+        </form>
+    </div>
+
+    <div class="track-grid">
         {% for track in tracks %}
-            <div class="col-md-4" id="track-{{ track.id }}">
-                <div class="card mb-4">
-                    <img src="{{ track.cover_image.url }}" class="card-img-top" alt="{{ track.title }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ track.title }}</h5>
-                        <p class="card-text">Album: {{ track.album }}</p>
-                        <p class="card-text">Artist: {{ track.artist }}</p>
-                        <p class="card-text">Duration: {{ track.duration }}</p>
-                        <p class="card-text">Price: £{{ track.price }}</p>
-                        <p class="card-text">Genre: {{ track.genre.name }}</p>
-
-                            <div class="d-flex gap-2 mb-2">
-                            <a href="{% url 'add_to_cart' 'track' track.id %}" class="btn btn-primary">Add to Cart</a>
-
-                            {% is_favorite request.user 'track' track.id as fav %}
-                            <form method="post" action="{% url 'toggle_favorite' 'track' track.id %}" class="d-inline">
-                                {% csrf_token %}
-                                <button class="btn btn-sm {% if fav %}btn-danger{% else %}btn-outline-danger{% endif %}" type="submit">
-                                {% if fav %}Remove ♥{% else %}Add ♥{% endif %}
-                                </button>
-                            </form>
-                            </div>
-
-
-                        <div class="waveform-player">
-                            <div id="waveform-{{ track.id }}" style="height: 80px;"></div>
-                            <button id="play-button-{{ track.id }}" class="btn btn-secondary" onclick="togglePlay('{{ track.id }}')">
-                                Play Preview
-                            </button>
-                            <span id="time-display-{{ track.id }}">0:00</span>
+            <article class="track-card" id="track-{{ track.id }}">
+                <div class="track-card__top">
+                    <img src="{{ track.cover_image.url }}" class="track-cover" alt="{{ track.album }} cover">
+                    <div class="track-main">
+                        <div class="track-title-row">
+                            <h3 class="track-title">{{ track.title }}</h3>
+                            <span class="track-price">£{{ track.price }}</span>
+                        </div>
+                        <p class="track-artist">{{ track.artist }}</p>
+                        <p class="track-album">{{ track.album }}</p>
+                        <div class="track-meta">
+                            <span>{{ track.genre.name }}</span>
+                            <span>{{ track.duration }}</span>
                         </div>
                     </div>
                 </div>
+
+                <div class="track-actions">
+                    <a href="{% url 'add_to_cart' 'track' track.id %}" class="track-btn track-btn--primary">
+                        <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+                        <span>Add</span>
+                    </a>
+
+                    {% is_favorite request.user 'track' track.id as fav %}
+                    <form method="post" action="{% url 'toggle_favorite' 'track' track.id %}">
+                        {% csrf_token %}
+                        <button class="track-icon-btn {% if fav %}is-favorite{% endif %}" type="submit" title="{% if fav %}Remove from favourites{% else %}Add to favourites{% endif %}" aria-label="{% if fav %}Remove {{ track.title }} from favourites{% else %}Add {{ track.title }} to favourites{% endif %}">
+                            <i class="fa-{% if fav %}solid{% else %}regular{% endif %} fa-heart" aria-hidden="true"></i>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="track-player">
+                    <div id="waveform-{{ track.id }}" class="track-waveform"></div>
+                    <div class="track-player__controls">
+                        <button id="play-button-{{ track.id }}" class="track-play-btn" onclick="togglePlay('{{ track.id }}')" type="button">
+                            <i class="fa-solid fa-play" aria-hidden="true"></i>
+                            <span>Play</span>
+                        </button>
+                        <span id="time-display-{{ track.id }}" class="track-time">0:00</span>
+                    </div>
+                </div>
+            </article>
+        {% empty %}
+            <div class="track-empty">
+                <h3>No tracks found</h3>
+                <p>Try a different artist, album, or track title.</p>
             </div>
         {% endfor %}
     </div>
+    {% if tracks.has_other_pages %}
+    <div class="pagination">
+
+        {% if tracks.has_previous %}
+            <a class="pagination-btn" href="?page={{ tracks.previous_page_number }}{% if q %}&q={{ q }}{% endif %}">
+                Previous
+            </a>
+        {% endif %}
+
+        {% for num in tracks.paginator.page_range %}
+            {% if tracks.number == num %}
+                <span class="current">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}{% if q %}&q={{ q }}{% endif %}">
+                    {{ num }}
+                </a>
+            {% endif %}
+        {% endfor %}
+
+        {% if tracks.has_next %}
+            <a class="pagination-btn" href="?page={{ tracks.next_page_number }}{% if q %}&q={{ q }}{% endif %}">
+                Next
+            </a>
+        {% endif %}
+
+    </div>
+    {% endif %}
+</section>
 
     <script src="https://unpkg.com/wavesurfer.js"></script>
 
@@ -61,20 +114,4 @@
     document.write('<script id="track-data" type="application/json">' + JSON.stringify(trackData) + '</' + 'script>');
 </script>
 
-    <style>
-        .progress {
-            background-color: #f3f3f3;
-            border-radius: 5px;
-            height: 10px;
-            width: 100%;
-            margin-top: 5px;
-            cursor: pointer;
-        }
-        .progress-bar {
-            background-color: #007bff;
-            height: 100%;
-            border-radius: 5px;
-            transition: width 0.1s;
-        }
-    </style>
 {% endblock %}

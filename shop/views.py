@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
 from django.urls import reverse
 from .serializers import ProductSerializer
 from .models import (
@@ -25,6 +26,73 @@ def _safe_file_url(filefield, default=""):
     return default
 
 def api_ping(request): return JsonResponse({"ok": True})
+
+
+def _wants_json(request):
+    return (
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+        or "application/json" in request.headers.get("accept", "")
+    )
+
+
+def _normalise_cart(cart):
+    total_qty = 0
+    total_price = Decimal("0.00")
+
+    for key, item in list((cart or {}).items()):
+        try:
+            quantity = max(0, int(item.get("quantity", 1)))
+        except (TypeError, ValueError):
+            quantity = 0
+
+        if quantity <= 0:
+            del cart[key]
+            continue
+
+        price = Decimal(str(item.get("price", "0")))
+        line_total = price * quantity
+        item["quantity"] = quantity
+        item["total_price"] = float(line_total)
+        total_qty += quantity
+        total_price += line_total
+
+    return total_qty, total_price
+
+
+def _cart_payload(request, message="Cart updated."):
+    cart = request.session.get("cart", {}) or {}
+    total_qty, total_price = _normalise_cart(cart)
+    request.session["cart"] = cart
+    request.session["total_quantity"] = total_qty
+    request.session.modified = True
+
+    total_price_text = f"{total_price:.2f}"
+    context = {
+        "cart_count": total_qty,
+        "cart_total_price": total_price_text,
+    }
+
+    return {
+        "ok": True,
+        "message": message,
+        "cart_count": total_qty,
+        "total_quantity": total_qty,
+        "cart_total_price": total_price_text,
+        "total_price": total_price_text,
+        "items": {
+            key: {
+                "quantity": item.get("quantity", 1),
+                "price": str(item.get("price", "0")),
+                "total_price": f"{Decimal(str(item.get('total_price', '0'))):.2f}",
+            }
+            for key, item in cart.items()
+        },
+        "cart_dropdown_html": render_to_string(
+            "partials/cart_dropdown.html",
+            context,
+            request=request,
+        ),
+    }
 
 
 def about(request):
@@ -151,19 +219,14 @@ def add_to_cart(request, item_type, item_id):
             'id': item_id,
         }
 
-    # Recalculate totals
-    total_qty = 0
-    for it in cart.values():
-        q = int(it.get('quantity', 1))
-        p = Decimal(str(it.get('price', '0')))
-        it['total_price'] = float(p * q)
-        total_qty += q
-
     request.session['cart'] = cart
-    request.session['total_quantity'] = total_qty
     request.session.modified = True
+    payload = _cart_payload(request, f"{item_title} added to your cart.")
 
     messages.success(request, f"{item_title} added to your cart.")
+    if _wants_json(request):
+        return JsonResponse(payload)
+
     return redirect(request.META.get('HTTP_REFERER', 'landing_page'))
 
 
@@ -290,10 +353,13 @@ def remove_from_cart(request, item_type, item_id):
         del cart[item_key]
         messages.success(request, f"{item_type.capitalize()} removed from cart.")
 
-    # Recalculate total quantity after removal
-    total_quantity = sum(item['quantity'] for item in cart.values())
     request.session['cart'] = cart
-    request.session['total_quantity'] = total_quantity
+    request.session.modified = True
+
+    payload = _cart_payload(request, f"{item_type.capitalize()} removed from cart.")
+    if _wants_json(request):
+        payload["removed_key"] = item_key
+        return JsonResponse(payload)
 
     return redirect('cart')  # Redirect back to the cart page
   
@@ -382,18 +448,14 @@ def update_cart_all(request):
         entry['total_price'] = float(price * qty)
         updated += 1
 
-    # Recalc header totals
-    total_qty = 0
-    total_price = Decimal('0.00')
-    for it in cart.values():
-        q = int(it.get('quantity', 1))
-        p = Decimal(str(it.get('price', '0')))
-        total_qty += q
-        total_price += p * q
-
     request.session['cart'] = cart
-    request.session['total_quantity'] = total_qty
     request.session.modified = True
+
+    payload = _cart_payload(request, f"Cart updated ({updated} changed, {removed} removed).")
+    if _wants_json(request):
+        payload["updated"] = updated
+        payload["removed"] = removed
+        return JsonResponse(payload)
 
     messages.success(request, f"Cart updated ({updated} changed, {removed} removed).")
     return redirect('cart')
@@ -406,7 +468,7 @@ def track_catalog(request):
         "album",
         "artist",
         "album__genre"
-    )
+    ).order_by("album__title", "id")
 
     if q:
         if exact:

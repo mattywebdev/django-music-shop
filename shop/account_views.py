@@ -2,10 +2,18 @@ from decimal import Decimal
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Order, OrderItem, Genre, Artist, Album, Track, Ambient, Tshirt, Vinyl, Poster, Favorite
 from urllib.parse import quote_plus
 from django.urls import reverse
+
+
+def _wants_json(request):
+    return (
+        request.headers.get("x-requested-with") == "XMLHttpRequest"
+        or "application/json" in request.headers.get("accept", "")
+    )
 
 @login_required
 def account_dashboard(request):
@@ -170,8 +178,20 @@ def toggle_favorite(request, item_type, item_id):
     )
     if created:
         messages.success(request, f"Added {title} to favourites.")
+        is_favorite = True
+        message = f"Added {title} to favourites."
     else:
         fav.delete()
         messages.info(request, f"Removed {title} from favourites.")
+        is_favorite = False
+        message = f"Removed {title} from favourites."
+
+    if _wants_json(request):
+        return JsonResponse({
+            "ok": True,
+            "is_favorite": is_favorite,
+            "favorites_count": request.user.favorites.count(),
+            "message": message,
+        })
 
     return redirect(request.META.get("HTTP_REFERER", "/"))

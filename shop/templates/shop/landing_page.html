@@ -7,67 +7,150 @@
 {% block hero %}
 <section class="hero hero--landing">
 
-  <div class="container hero__content">
-    <h1>Welcome to My Music Shop</h1>
-    <p>Your go-to place for the best tracks and albums!</p>
-    <a href="{% url 'catalog' %}" class="btn btn-primary btn-lg">Browse Catalog</a>
+  <div class="container hero__content landing-hero-content">
+    <div class="landing-hero-copy">
+      <p class="landing-kicker">Soundtracks for golden-hour moments</p>
+      <h1>Find the track that belongs to the scene.</h1>
+      <p>
+        Sunset guitars, late drives, quiet rooms, and songs that feel attached to a memory.
+        Preview tracks, follow the mood, and take the release with you.
+      </p>
+      <div class="landing-hero-actions">
+        <a href="{% url 'track_catalog' %}" class="landing-primary-btn">
+          <i class="fa-solid fa-play" aria-hidden="true"></i>
+          Preview tracks
+        </a>
+        <a href="{% url 'catalog' %}" class="landing-secondary-btn">
+          <i class="fa-solid fa-compact-disc" aria-hidden="true"></i>
+          Browse albums
+        </a>
+      </div>
+      <div class="landing-story-tags" aria-label="Store moods">
+        <span>Indie electronic</span>
+        <span>Ambient nights</span>
+        <span>Vinyl-ready albums</span>
+      </div>
+      <div class="landing-wave" aria-hidden="true"></div>
+    </div>
+
+    <div class="landing-hero-release" aria-label="Featured release">
+      {% for album in trending_albums %}
+        {% if forloop.first %}
+          <a href="{% url 'catalog' %}" class="landing-hero-release__art">
+            <img src="{{ album.cover_image|file_url:'/static/img/placeholder.png' }}" alt="{{ album.title }} cover">
+          </a>
+          <div class="landing-hero-release__copy">
+            <span>Start the story here</span>
+            <h2>{{ album.title }}</h2>
+            <p>{{ album.artist }}</p>
+            <div>
+              <strong>£{{ album.price }}</strong>
+              <a href="{% url 'add_to_cart' 'album' album.id %}">Add album</a>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
   </div>
 </section>
 {% endblock %}
 
 {% block content %}
 
-<section class="shop-description text-center mb-5">
-  <h2>About Our Shop</h2>
+<section class="landing-intro">
+  <div>
+    <p class="landing-kicker">Soundtrack wall</p>
+    <h2>Every track should feel like it came from somewhere.</h2>
+  </div>
   <p>
-    At My Music Shop, we offer an extensive collection of beats, albums, and merchandise that caters to all music lovers.
-    Our user-friendly platform allows you to easily purchase your favorite tracks and physical vinyls. As a registered
-    user, you can keep up to date with the latest releases, save your favorite tracks, and write reviews to share your
-    thoughts with the community. Join us today and enhance your music experience!
+    Browse by mood, format, and release. Start with a preview, save what catches you, then collect the track,
+    album, or merch that carries the scene forward.
   </p>
 </section>
 
-<section class="trending-sales mb-5">
-  <h2 class="text-center mb-4">Trending Albums</h2>
-  <div class="sales-grid">
+<section class="landing-paths" aria-label="Shop categories">
+  <a href="{% url 'track_catalog' %}" class="landing-path landing-path--tracks">
+    <i class="fa-solid fa-wave-square" aria-hidden="true"></i>
+    <span>Tracks</span>
+    <small>Preview singles and add favourites.</small>
+  </a>
+  <a href="{% url 'catalog' %}" class="landing-path landing-path--albums">
+    <i class="fa-solid fa-compact-disc" aria-hidden="true"></i>
+    <span>Albums</span>
+    <small>Full releases with polished artwork.</small>
+  </a>
+  <a href="{% url 'ambient' %}" class="landing-path landing-path--ambient">
+    <i class="fa-solid fa-cloud-moon" aria-hidden="true"></i>
+    <span>Ambient</span>
+    <small>Textures, drones and long-form moods.</small>
+  </a>
+  <a href="{% url 'merchandise' %}" class="landing-path landing-path--merch">
+    <i class="fa-solid fa-shirt" aria-hidden="true"></i>
+    <span>Merch</span>
+    <small>Wearable and collectible drops.</small>
+  </a>
+</section>
+
+<section class="landing-featured">
+  <div class="landing-section-head">
+    <p class="landing-kicker">Fresh picks</p>
+    <h2>Trending Albums</h2>
+  </div>
+  <div class="landing-album-grid">
     {% for album in trending_albums %}
-      <article class="sale-item">
-        <a href="{% url 'catalog' %}">
+      <article class="landing-album-card">
+        <a class="landing-album-art" href="{% url 'catalog' %}">
           <img src="{{ album.cover_image|file_url:'/static/img/placeholder.png' }}" alt="{{ album.title }} cover">
         </a>
-        <h3 class="h5 mt-3 mb-1">{{ album.title }}</h3>
-        <p class="mb-2">by {{ album.artist }}</p>
-        <p class="mb-3 price">£{{ album.price }}</p>
-        <a href="{% url 'add_to_cart' 'album' album.id %}" class="btn btn-success btn-sm">Add to Cart</a>
+        <div class="landing-album-copy">
+          <h3>{{ album.title }}</h3>
+          <p>{{ album.artist }}</p>
+        </div>
+        <div class="landing-album-actions">
+          <span class="landing-price">£{{ album.price }}</span>
+          <a href="{% url 'add_to_cart' 'album' album.id %}" class="landing-add-btn">
+            <i class="fa-solid fa-cart-plus" aria-hidden="true"></i>
+            Add album
+          </a>
+        </div>
       </article>
     {% empty %}
-      <p class="text-center opacity-75">No trending sales at the moment.</p>
+      <p class="landing-empty">No trending sales at the moment.</p>
     {% endfor %}
   </div>
 </section>
 
-<section class="container mb-5">
-  <div class="reviews">
-    <h2>What Our Customers Say</h2>
-    <div class="review">
-      <p>🔥 "Best place to get rare black metal vinyls!"</p>
-      <p>- Jakub W.</p>
-    </div>
-    <div class="review">
-      <p>🤘 "Great selection, fast shipping!"</p>
-      <p>- Anna K.</p>
-    </div>
+<section class="landing-community">
+  <div class="landing-community-copy">
+    <p class="landing-kicker">Community echoes</p>
+    <h2>Quick notes from repeat listeners.</h2>
+    <p>
+      The shop stays out of the way: preview fast, save favourites, and keep the cart moving without losing the moment.
+    </p>
   </div>
+  <div class="landing-review-grid">
+    <figure class="landing-review">
+      <blockquote>Found a release in seconds, previewed it, and checked out without losing my place.</blockquote>
+      <figcaption>Jakub W.</figcaption>
+    </figure>
+    <figure class="landing-review">
+      <blockquote>Great selection, fast shipping, and the album pages actually feel worth browsing.</blockquote>
+      <figcaption>Anna K.</figcaption>
+    </figure>
+  </div>
+</section>
 
-  <div class="newsletter mt-4">
+<section class="landing-newsletter">
+  <div>
+    <p class="landing-kicker">Release radar</p>
     <h2>Stay Updated</h2>
     <p>Get the latest releases and exclusive discounts straight to your inbox.</p>
-    <form method="post" action="#">
-      {% csrf_token %}
-      <input type="email" name="email" placeholder="Enter your email" required>
-      <button type="submit">Subscribe</button>
-    </form>
   </div>
+  <form method="post" action="#" class="landing-newsletter-form">
+    {% csrf_token %}
+    <input type="email" name="email" placeholder="Email address" required>
+    <button type="submit">Subscribe</button>
+  </form>
 </section>
 
 {% endblock %}

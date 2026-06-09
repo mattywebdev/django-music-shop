@@ -5,8 +5,8 @@ This project simulates a real e-commerce experience with cart management, checko
 
 ---
 
-<img width="1351" height="616" alt="image" src="https://github.com/user-attachments/assets/ce713a62-6bbe-4a97-9df2-35ab38ac90fe" />
-<img width="1265" height="653" alt="image" src="https://github.com/user-attachments/assets/153d8bb1-ffeb-42df-841d-5a8af829d0af" />
+<img width="1673" height="977" alt="image" src="https://github.com/user-attachments/assets/f5a92e85-c154-4728-ba15-ffa791a77a14" />
+<img width="1645" height="980" alt="image" src="https://github.com/user-attachments/assets/83cb9951-02be-4b34-bd9e-cd781b14d58d" />
 <img width="359" height="741" alt="image" src="https://github.com/user-attachments/assets/43ee2782-a856-4f82-9d5a-7375560de6e1" />
 <img width="362" height="740" alt="image" src="https://github.com/user-attachments/assets/ae9fc1f6-5508-45b6-9bd3-db8d48eb2dee" />
 

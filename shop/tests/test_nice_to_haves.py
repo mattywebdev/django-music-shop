@@ -68,7 +68,14 @@ class NiceToHavesTests(TestCase):
 
     # 3) Albums API pagination & ordering edge cases
     def test_albums_api_pagination_and_ordering(self):
-        # ... create 13 albums as you already do ...
+        for index in range(13):
+            Album.objects.create(
+                title=f"Album {index:02d}",
+                price=Decimal(index + 1),
+                artist=self.artist,
+                genre=self.genre,
+                release_date=date(2024, 1, index + 1),
+            )
 
         r1 = self.client.get(reverse("albums_api") + "?ordering=-price")
         self.assertEqual(r1.status_code, 200)

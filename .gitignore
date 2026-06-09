@@ -26,6 +26,14 @@ media/*
 !media/merch_images/
 !media/track_previews/
 
+# Keep demo media curated; ignore upload/test leftovers inside those folders
+media/album_covers/*
+media/ambient_covers/*
+media/ambient_previews/*
+media/audio_previews/*
+media/merch_images/*
+media/track_previews/*
+
 # Allow only exact demo files used by fixture
 !media/album_covers/afterglow-transit-cover.jpg
 !media/album_covers/city-lights-quiet-rooms-cover.jpg

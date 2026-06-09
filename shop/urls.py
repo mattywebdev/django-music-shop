@@ -5,6 +5,10 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.landing_page, name='landing_page'),
+    path('shop/albums/', views.catalog, name='shop_albums'),
+    path('shop/tracks/', views.track_catalog, name='shop_tracks'),
+    path('shop/ambient/', views.ambient, name='shop_ambient'),
+    path('shop/merch/', views.merchandise_view, name='shop_merch'),
     path('catalog/', views.catalog, name='catalog'),
     path('ambient/', views.ambient, name='ambient'),
     path('add_to_cart/<str:item_type>/<int:item_id>/', views.add_to_cart, name='add_to_cart'),

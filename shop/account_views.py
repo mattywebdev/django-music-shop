@@ -46,20 +46,16 @@ def _shop_url_for(item_type: str, title: str | None, item_id: int) -> str:
     t = (item_type or "").lower()
 
     if t == "album":
-        # to top of Album Catalog:
-        # return reverse("catalog")
-        # or jump to a specific card anchor:
-        return f"{reverse('catalog')}#album-{item_id}"
+        return f"{reverse('shop_albums')}#album-{item_id}"
 
     if t == "track":
-        # return reverse("track_catalog")
-        return f"{reverse('track_catalog')}#track-{item_id}"
+        return f"{reverse('shop_tracks')}#track-{item_id}"
 
     if t in {"tshirt", "vinyl", "poster"}:
-        return f"{reverse('merchandise')}?category={t}"
+        return f"{reverse('shop_merch')}?category={t}"
 
     if t == "ambient":
-        return reverse("ambient")
+        return reverse("shop_ambient")
 
     return reverse("landing_page")
 

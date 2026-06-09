@@ -80,20 +80,20 @@
               <i class="fa-solid fa-music" aria-hidden="true"></i><span>Music</span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="musicDropdown">
-              <li><a class="dropdown-item" href="{% url 'track_catalog' %}"><i class="fa-solid fa-headphones" aria-hidden="true"></i><span>Tracks</span></a></li>
-              <li><a class="dropdown-item" href="{% url 'catalog' %}"><i class="fa-solid fa-compact-disc" aria-hidden="true"></i><span>Albums</span></a></li>
-              <li><a class="dropdown-item" href="{% url 'ambient' %}"><i class="fa-solid fa-wave-square" aria-hidden="true"></i><span>Ambient</span></a></li>
+              <li><a class="dropdown-item" href="{% url 'shop_tracks' %}"><i class="fa-solid fa-headphones" aria-hidden="true"></i><span>Tracks</span></a></li>
+              <li><a class="dropdown-item" href="{% url 'shop_albums' %}"><i class="fa-solid fa-compact-disc" aria-hidden="true"></i><span>Albums</span></a></li>
+              <li><a class="dropdown-item" href="{% url 'shop_ambient' %}"><i class="fa-solid fa-wave-square" aria-hidden="true"></i><span>Ambient</span></a></li>
             </ul>
           </li>
 
           <li class="nav-item dropdown dropdown hover-open">
-            <a class="nav-link dropdown-toggle" href="{% url 'merchandise' %}?category=all" id="merchDropdown" role="button" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" href="{% url 'shop_merch' %}?category=all" id="merchDropdown" role="button" aria-expanded="false">
               <i class="fa-solid fa-shirt" aria-hidden="true"></i><span>Merchandise</span>
             </a>
             <ul class="dropdown-menu" aria-labelledby="merchDropdown">
-              <li><a class="dropdown-item" href="{% url 'merchandise' %}?category=tshirt"><i class="fa-solid fa-shirt" aria-hidden="true"></i><span>T-shirts</span></a></li>
-              <li><a class="dropdown-item" href="{% url 'merchandise' %}?category=vinyl"><i class="fa-solid fa-record-vinyl" aria-hidden="true"></i><span>Vinyls</span></a></li>
-              <li><a class="dropdown-item" href="{% url 'merchandise' %}?category=poster"><i class="fa-regular fa-image" aria-hidden="true"></i><span>Posters</span></a></li>
+              <li><a class="dropdown-item" href="{% url 'shop_merch' %}?category=tshirt"><i class="fa-solid fa-shirt" aria-hidden="true"></i><span>T-shirts</span></a></li>
+              <li><a class="dropdown-item" href="{% url 'shop_merch' %}?category=vinyl"><i class="fa-solid fa-record-vinyl" aria-hidden="true"></i><span>Vinyls</span></a></li>
+              <li><a class="dropdown-item" href="{% url 'shop_merch' %}?category=poster"><i class="fa-regular fa-image" aria-hidden="true"></i><span>Posters</span></a></li>
             </ul>
           </li>
 
@@ -105,11 +105,11 @@
             class="position-relative d-none d-lg-flex flex-grow-1 mx-4"
             style="max-width: 480px;"
             method="get"
-            action="{% url 'catalog' %}"
+            action="{% url 'shop_albums' %}"
             data-suggest-url="{% url 'search_suggest' %}"
-            data-albums-url="{% url 'catalog' %}"
-            data-tracks-url="{% url 'track_catalog' %}"
-            data-merch-url="{% url 'merchandise' %}"
+            data-albums-url="{% url 'shop_albums' %}"
+            data-tracks-url="{% url 'shop_tracks' %}"
+            data-merch-url="{% url 'shop_merch' %}"
             autocomplete="off">
         <input id="nav-search" name="q" class="form-control" placeholder="Search artists, albums, tracks">
         <div id="nav-suggest" class="dropdown-menu p-0"

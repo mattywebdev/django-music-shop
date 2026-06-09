@@ -37,10 +37,14 @@ class CatalogEdgesTests(TestCase):
     def test_catalog_renders_and_search(self):
         self.assertEqual(self.client.get("/catalog/").status_code, 200)
         self.assertEqual(self.client.get("/catalog/?q=Alpha").status_code, 200)
+        self.assertEqual(self.client.get("/shop/albums/").status_code, 200)
+        self.assertEqual(self.client.get("/shop/albums/?q=Alpha").status_code, 200)
 
     def test_track_catalog_and_ambient_render(self):
         self.assertEqual(self.client.get("/track_catalog/").status_code, 200)
         self.assertEqual(self.client.get("/ambient/").status_code, 200)
+        self.assertEqual(self.client.get("/shop/tracks/").status_code, 200)
+        self.assertEqual(self.client.get("/shop/ambient/").status_code, 200)
 
     def test_add_to_cart_invalid_type_is_400(self):
         r = self.client.post("/add_to_cart/foo/999/", follow=True)

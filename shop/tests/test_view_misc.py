@@ -34,6 +34,8 @@ class MiscViewsTests(TestCase):
         for cat in ("all", "tshirt", "vinyl", "poster"):
             r = self.client.get(f"/merchandise/?category={cat}")
             self.assertEqual(r.status_code, 200)
+            r = self.client.get(f"/shop/merch/?category={cat}")
+            self.assertEqual(r.status_code, 200)
 
     def test_remove_from_cart_and_success(self):
         self.client.post(f"/add_to_cart/album/{self.album.id}/", follow=True)

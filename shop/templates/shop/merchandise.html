@@ -8,7 +8,7 @@
       <p class="merch-kicker">Store goods</p>
       <h1 class="merch-page-title">Merchandise</h1>
     </div>
-    <form class="merch-search" method="get" action="{% url 'merchandise' %}">
+    <form class="merch-search" method="get" action="{% url 'shop_merch' %}">
       <input type="hidden" name="category" value="{{ category|default:'all' }}">
       <i class="fa-solid fa-shirt" aria-hidden="true"></i>
       <input type="search" name="q" value="{{ q|default:'' }}" placeholder="Search merch or artists">

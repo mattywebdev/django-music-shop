@@ -13,7 +13,7 @@ def robots_txt(request):
 
 def sitemap_xml(request):
     base = f"{request.scheme}://{request.get_host()}"
-    paths = ["", "catalog/", "track_catalog/", "ambient/", "merchandise/", "about/", "privacy/", "terms/"]
+    paths = ["", "shop/albums/", "shop/tracks/", "shop/ambient/", "shop/merch/", "about/", "privacy/", "terms/"]
     urls = "\n".join(
         f"  <url><loc>{base}/{path}</loc><changefreq>weekly</changefreq></url>"
         for path in paths

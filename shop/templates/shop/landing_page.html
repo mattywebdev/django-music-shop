@@ -16,11 +16,11 @@
         Preview tracks, follow the mood, and take the release with you.
       </p>
       <div class="landing-hero-actions">
-        <a href="{% url 'track_catalog' %}" class="landing-primary-btn">
+        <a href="{% url 'shop_tracks' %}" class="landing-primary-btn">
           <i class="fa-solid fa-play" aria-hidden="true"></i>
           Preview tracks
         </a>
-        <a href="{% url 'catalog' %}" class="landing-secondary-btn">
+        <a href="{% url 'shop_albums' %}" class="landing-secondary-btn">
           <i class="fa-solid fa-compact-disc" aria-hidden="true"></i>
           Browse albums
         </a>
@@ -36,7 +36,7 @@
     <div class="landing-hero-release" aria-label="Featured release">
       {% for album in trending_albums %}
         {% if forloop.first %}
-          <a href="{% url 'catalog' %}" class="landing-hero-release__art">
+          <a href="{% url 'shop_albums' %}" class="landing-hero-release__art">
             <img src="{{ album.cover_image|file_url:'/static/img/placeholder.png' }}" alt="{{ album.title }} cover">
           </a>
           <div class="landing-hero-release__copy">
@@ -69,22 +69,22 @@
 </section>
 
 <section class="landing-paths" aria-label="Shop categories">
-  <a href="{% url 'track_catalog' %}" class="landing-path landing-path--tracks">
+  <a href="{% url 'shop_tracks' %}" class="landing-path landing-path--tracks">
     <i class="fa-solid fa-wave-square" aria-hidden="true"></i>
     <span>Tracks</span>
     <small>Preview singles and add favourites.</small>
   </a>
-  <a href="{% url 'catalog' %}" class="landing-path landing-path--albums">
+  <a href="{% url 'shop_albums' %}" class="landing-path landing-path--albums">
     <i class="fa-solid fa-compact-disc" aria-hidden="true"></i>
     <span>Albums</span>
     <small>Full releases with polished artwork.</small>
   </a>
-  <a href="{% url 'ambient' %}" class="landing-path landing-path--ambient">
+  <a href="{% url 'shop_ambient' %}" class="landing-path landing-path--ambient">
     <i class="fa-solid fa-cloud-moon" aria-hidden="true"></i>
     <span>Ambient</span>
     <small>Textures, drones and long-form moods.</small>
   </a>
-  <a href="{% url 'merchandise' %}" class="landing-path landing-path--merch">
+  <a href="{% url 'shop_merch' %}" class="landing-path landing-path--merch">
     <i class="fa-solid fa-shirt" aria-hidden="true"></i>
     <span>Merch</span>
     <small>Wearable and collectible drops.</small>
@@ -99,7 +99,7 @@
   <div class="landing-album-grid">
     {% for album in trending_albums %}
       <article class="landing-album-card">
-        <a class="landing-album-art" href="{% url 'catalog' %}">
+        <a class="landing-album-art" href="{% url 'shop_albums' %}">
           <img src="{{ album.cover_image|file_url:'/static/img/placeholder.png' }}" alt="{{ album.title }} cover">
         </a>
         <div class="landing-album-copy">

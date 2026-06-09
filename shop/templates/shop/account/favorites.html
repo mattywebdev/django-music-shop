@@ -19,7 +19,7 @@
       <p class="account-kicker">Collection</p>
       <h2 id="favorites-count">{{ fav_cards|length }} saved item{{ fav_cards|length|pluralize }}</h2>
     </div>
-    <a class="account-text-link" href="{% url 'catalog' %}">
+    <a class="account-text-link" href="{% url 'shop_albums' %}">
       <i class="fa-solid fa-record-vinyl" aria-hidden="true"></i>
       Browse albums
     </a>
@@ -65,7 +65,7 @@
     <i class="fa-solid fa-heart" aria-hidden="true"></i>
     <h2>No favourites yet</h2>
     <p>Save anything you like while browsing, then use this page as your quick return stack.</p>
-    <a class="account-primary-action" href="{% url 'catalog' %}">Browse music</a>
+    <a class="account-primary-action" href="{% url 'shop_albums' %}">Browse music</a>
   </div>
   {% endif %}
 </section>

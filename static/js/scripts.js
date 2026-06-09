@@ -402,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
         (data.albums||[] ).slice(0,5).forEach(a => add(`${albumsURL}?q=${encodeURIComponent(a.title)}`, a.title, a.artist));
         (data.tracks || []).slice(0, 5).forEach(tk => add(`${tracksURL}?q=${encodeURIComponent(tk.title)}`, tk.title, tk.artist));
         // 🧢 Merchandise results
-        (data.merch||[] ).slice(0,5).forEach(m =>add(`/merchandise/?q=${encodeURIComponent(m.title)}`, m.title, m.type));
+        (data.merch||[] ).slice(0,5).forEach(m =>add(`${form.dataset.merchUrl}?q=${encodeURIComponent(m.title)}`, m.title, m.type));
         menu.children.length ? show() : hide();
       } catch (_) { hide(); }
     }, 150);

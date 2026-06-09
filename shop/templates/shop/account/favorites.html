@@ -17,7 +17,7 @@
   <div class="account-section-head">
     <div>
       <p class="account-kicker">Collection</p>
-      <h2>{{ fav_cards|length }} saved item{{ fav_cards|length|pluralize }}</h2>
+      <h2 id="favorites-count">{{ fav_cards|length }} saved item{{ fav_cards|length|pluralize }}</h2>
     </div>
     <a class="account-text-link" href="{% url 'catalog' %}">
       <i class="fa-solid fa-record-vinyl" aria-hidden="true"></i>
@@ -27,7 +27,7 @@
 
   <div class="account-fav-grid">
     {% for card in fav_cards %}
-    <article class="account-fav-card">
+    <article class="account-fav-card" data-favorite-card>
       <a class="account-fav-media" href="{{ card.shop_url }}" aria-label="View {{ card.title }} in shop">
         {% if card.image_url %}
         <img src="{{ card.image_url }}" alt="{{ card.title }}">

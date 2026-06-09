@@ -670,10 +670,30 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const favBadge = document.querySelector('.nav-badge');
-      if (favBadge && data.favorites_count !== undefined) {
-        favBadge.textContent = data.favorites_count;
-        favBadge.hidden = Number(data.favorites_count) === 0;
+      if (data.favorites_count !== undefined) {
+        const count = Number(data.favorites_count);
+
+        document.querySelectorAll('[data-favorites-count]').forEach((badge) => {
+          badge.textContent = count;
+          badge.hidden = count === 0;
+        });
       }
+
+      const favoriteCard = favForm.closest('.account-fav-card');
+
+      if (favoriteCard && data.is_favorite === false) {
+        favoriteCard.remove();
+
+         const countHeading = document.getElementById('favorites-count');
+
+        if (countHeading) {
+          const count = Number(data.favorites_count);
+
+          countHeading.textContent =
+            `${count} saved item${count === 1 ? '' : 's'}`;
+        }
+      }
+      
       showNavToast(data?.message || 'Favourites updated.');
     } catch (error) {
       showNavToast('Could not update favourites.');

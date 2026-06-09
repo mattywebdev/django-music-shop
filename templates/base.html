@@ -134,9 +134,9 @@
             <li class="nav-item nav-favorites-item">
             <a href="{% url 'favorites' %}" class="nav-link nav-favorites-link" title="Favourites" aria-label="Favourites">
                 <i class="fa-solid fa-heart" aria-hidden="true"></i>
-                {% if favorites_count %}
-                <span class="nav-badge">{{ favorites_count }}</span>
-                {% endif %}
+            <span class="nav-badge" data-favorites-count {% if not favorites_count %}hidden{% endif %}>
+            {{ favorites_count|default:0 }}
+            </span>
             </a>
             </li>
 
@@ -207,9 +207,9 @@
       <a href="{% url 'favorites' %}">
         <i class="fa-solid fa-heart" aria-hidden="true"></i>
         <span>Favourites</span>
-        {% if favorites_count %}
-        <em>{{ favorites_count }}</em>
-        {% endif %}
+            <em data-favorites-count {% if not favorites_count %}hidden{% endif %}>
+            {{ favorites_count|default:0 }}
+            </em>
       </a>
       <a class="mobile-account-logout" href="{% url 'logout' %}">
         <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>

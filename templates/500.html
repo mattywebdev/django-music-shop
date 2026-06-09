@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Something went wrong - My Music Shop{% endblock %}
+{% block meta_description %}Something went wrong while loading the music shop demo. Please try again in a moment.{% endblock %}
+{% block content %}
+<section class="account-page">
+  <div class="account-empty-state">
+    <i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i>
+    <h1>Something went wrong</h1>
+    <p>The shop dropped the beat for a moment. Please try again shortly.</p>
+    <a class="account-primary-action" href="{% url 'landing_page' %}">Back to home</a>
+  </div>
+</section>
+{% endblock %}

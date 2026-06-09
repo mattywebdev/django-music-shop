@@ -4,7 +4,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="{% block meta_description %}A polished Django music shop demo with albums, tracks, ambient releases, merchandise, cart, checkout, accounts, favourites, and AJAX interactions.{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}My Music Shop{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Browse demo albums, tracks, ambient pieces, and merchandise in a custom Django ecommerce shop.{% endblock %}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{% static 'images/music-merch.jpg' %}">
   <title>{% block title %}Music Shop{% endblock %}</title>
+  <link rel="icon" href="{% static 'images/favicon.svg' %}?v=20260609" type="image/svg+xml">
+  <link rel="icon" href="{% static 'images/favicon-32x32.png' %}?v=20260609" sizes="32x32" type="image/png">
+  <link rel="shortcut icon" href="{% static 'images/favicon-32x32.png' %}?v=20260609" type="image/png">
+  <link rel="apple-touch-icon" href="{% static 'images/favicon-32x32.png' %}?v=20260609">
 
   <!-- Your main CSS first -->
   <link rel="stylesheet" href="{% static 'css/style.css' %}?v=20260609-mobile-auth-drawer-1">
@@ -231,6 +240,10 @@
 
   <footer class="text-white text-center py-4 footer-glass">
     <p class="mb-2">Copyright © 2026 My Music Shop</p>
+    <p class="mb-2 footer-links">
+      <a href="{% url 'privacy' %}" class="text-secondary mx-2">Privacy</a>
+      <a href="{% url 'terms' %}" class="text-secondary mx-2">Terms</a>
+    </p>
     <div>
       <a href="#" class="text-secondary mx-2"><i class="fab fa-facebook-f"></i></a>
       <a href="#" class="text-secondary mx-2"><i class="fab fa-twitter"></i></a>

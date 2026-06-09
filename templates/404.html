@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Page not found - My Music Shop{% endblock %}
+{% block meta_description %}This page could not be found. Return to the music shop home page or browse albums, tracks, ambient releases, and merchandise.{% endblock %}
+{% block content %}
+<section class="account-page">
+  <div class="account-empty-state">
+    <i class="fa-solid fa-record-vinyl" aria-hidden="true"></i>
+    <h1>Page not found</h1>
+    <p>This link hit a wrong note. Head back to the shop and keep browsing.</p>
+    <a class="account-primary-action" href="{% url 'landing_page' %}">Back to home</a>
+  </div>
+</section>
+{% endblock %}

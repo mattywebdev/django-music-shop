@@ -27,35 +27,30 @@ media/*
 !media/track_previews/
 
 # Allow only exact demo files used by fixture
-!media/album_covers/snow.jpg
-!media/album_covers/the_fall.jpg
-!media/album_covers/the_forest.jpg
-!media/album_covers/Gehennas.png
+!media/album_covers/afterglow-transit-cover.jpg
+!media/album_covers/city-lights-quiet-rooms-cover.jpg
+!media/album_covers/neon-weather-systems-cover.jpg
+!media/album_covers/tides-beneath-glass-cover.jpg
 
-!media/ambient_covers/fireplace.jpg
+!media/ambient_covers/fireside-room-tone-cover.jpg
 
-!media/ambient_previews/fireplace.mp3
+!media/ambient_previews/fireside-room-tone-preview.mp3
 
-!media/audio_previews/futility.mp3
-!media/audio_previews/heeh.mp3
-!media/audio_previews/eciles.wav
-!media/audio_previews/recreantbass.mp3
-!media/audio_previews/Volumes_-_Erased.mid
+!media/audio_previews/afterglow-transit-preview.mp3
+!media/audio_previews/blue-hour-letters-preview.mp3
+!media/audio_previews/city-lights-quiet-rooms-preview.mp3
+!media/audio_previews/neon-weather-systems-preview.mp3
+!media/audio_previews/tides-beneath-glass-preview.mp3
 
-!media/merch_images/tshirt.jpg
-!media/merch_images/Free_Vinyl_Mockup_2.jpg
-!media/merch_images/dan-loftus-N4CnMbcZe70-unsplash.jpg
-!media/merch_images/yan-lee-GnZyUqc5bv4-unsplash.jpg
+!media/merch_images/artist-tshirt-black-cover.jpg
+!media/merch_images/autumn-lane-poster.jpg
+!media/merch_images/collectors-vinyl-mockup.jpg
+!media/merch_images/forest-lantern-poster.jpg
 
-!media/track_previews/doodle.mp3
-!media/track_previews/pisces.mp3
-!media/track_previews/eciles.wav
-!media/track_previews/recreantbass.mp3
-!media/track_previews/Volumes_-_Erased.mid
-!media/track_previews/Volumes_-_Erased_zMCJOA2.mid
-!media/track_previews/Volumes_-_Erased_UtIHz77.mid
-!media/track_previews/Volumes_-_Erased_nhxiZh2.mid
-!media/track_previews/Volumes_-_Erased_9G030Gc.mid
+!media/track_previews/blue-hour-drift-preview.mp3
+!media/track_previews/glass-platform-preview.mp3
+!media/track_previews/low-orbit-groove-preview.mp3
+!media/track_previews/midnight-sketch-preview.mp3
 # Test / coverage artifacts
 .coverage
 htmlcov/

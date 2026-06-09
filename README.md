@@ -200,6 +200,7 @@ python manage.py test
 - This project is for learning and portfolio purposes  
 - No real payment gateway is integrated  
 - Media handling is configured for local development  
+- Production/demo deployment reads key settings from environment variables. Copy `.env.example`, set a real `DJANGO_SECRET_KEY`, keep `DJANGO_DEBUG=False`, and configure `DJANGO_ALLOWED_HOSTS` for your domain.
 
 ---
 

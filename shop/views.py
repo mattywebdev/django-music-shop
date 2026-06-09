@@ -122,14 +122,13 @@ def register(request):
         if form.is_valid():
             form.save()
             username = form.cleaned_data.get('username')
-            messages.success(request, f"Account created for {username}! You can now log in.")
+            messages.success(request, f"Account created for {username}! You can now log in.", extra_tags="auth")
             return redirect('login')
     else:
          form = UserCreationForm()
     return render(request, 'shop/register.html', {'form': form})
 
 def loginPage(request):
-
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
@@ -139,8 +138,12 @@ def loginPage(request):
             login(request, user)
             return redirect('landing_page')
         else:
-            messages.info(request, 'Username OR password is incorrect')
-    return render(request, 'shop/login.html')
+            messages.info(request, 'Username OR password is incorrect', extra_tags="auth")
+    auth_messages = [
+        message for message in messages.get_messages(request)
+        if 'auth' in message.tags
+    ]
+    return render(request, 'shop/login.html', {'auth_messages': auth_messages})
 
 
 def catalog(request):

@@ -10,9 +10,9 @@
             <h1>Login</h1>
         </div>
 
-        {% if messages %}
+        {% if auth_messages %}
             <div class="auth-messages">
-                {% for message in messages %}
+                {% for message in auth_messages %}
                     <div class="auth-message">{{ message }}</div>
                 {% endfor %}
             </div>

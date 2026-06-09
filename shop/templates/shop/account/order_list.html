@@ -2,29 +2,65 @@
 {% block title %}My Orders{% endblock %}
 
 {% block content %}
-<h2>My Orders</h2>
+<section class="account-page account-page--orders">
+  <div class="account-hero">
+    <span class="account-hero-icon account-hero-icon--orders">
+      <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+    </span>
+    <div class="account-hero-copy">
+      <p class="account-kicker">Purchases</p>
+      <h1>Order history</h1>
+      <p>Receipts and delivery status for everything you have bought here.</p>
+    </div>
+  </div>
 
-<table class="table">
-    <thead>
-    <tr>
-        <th>Order</th><th>Date</th><th>Status</th><th>Items</th>
-        <th class="text-end">Total</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for order in orders %}
-    <tr>
-        <td><a href="{% url 'account_order_detail' order.pk %}">#{{ order.pk }}</a></td>
-        <td>{{ order.created_at }}</td>
-        <td><span class="badge bg-secondary">{{ order.status }}</span></td>
-        <td>
-        {% for it in order.items.all %}
-            <span class="badge bg-dark">{{ it.title }}</span>{% if not forloop.last %} {% endif %}
-        {% empty %}—{% endfor %}
-        </td>
-        <td class="text-end">£{{ order.total_amount }}</td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+  {% if orders %}
+  <section class="account-panel account-orders-panel">
+    <div class="account-section-head">
+      <div>
+        <p class="account-kicker">Archive</p>
+        <h2>{{ orders|length }} order{{ orders|length|pluralize }}</h2>
+      </div>
+      <a class="account-text-link" href="{% url 'account_dashboard' %}">
+        <i class="fa-solid fa-user" aria-hidden="true"></i>
+        Account
+      </a>
+    </div>
+
+    <div class="account-orders-list">
+      {% for order in orders %}
+      <article class="account-order-card">
+        <a class="account-order-card-main" href="{% url 'account_order_detail' order.pk %}">
+          <span>
+            <em>Order</em>
+            <strong>#{{ order.pk }}</strong>
+          </span>
+          <span>
+            <em>Date</em>
+            <strong>{{ order.created_at|date:"d M Y" }}</strong>
+          </span>
+          <span class="account-order-status">{{ order.status }}</span>
+          <strong class="account-order-total">£{{ order.total_amount|floatformat:2 }}</strong>
+        </a>
+
+        <div class="account-order-items" aria-label="Order items">
+          {% for it in order.items.all %}
+          <span>{{ it.title }}</span>
+          {% empty %}
+          <span>No item details</span>
+          {% endfor %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <div class="account-empty-state account-empty-state--orders">
+    <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+    <h2>No orders yet</h2>
+    <p>When you buy music or merch, your receipts and order status will live here.</p>
+    <a class="account-primary-action" href="{% url 'catalog' %}">Browse music</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

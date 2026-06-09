@@ -4,40 +4,59 @@
 {% block title %}About Us - My Music Shop{% endblock %}
 
 {% block content %}
-<div class="container py-5">
-    <h1 class="text-center mb-4"><u>About Us</u></h1>
-    <div class="row">
-        <div class="col-md-6">
-            <img src="{% static 'images/storefront.jpg' %}" alt="Music Shop" class="img-fluid rounded">
+<section class="about-page">
+    <div class="about-hero">
+        <p class="about-kicker">Independent UK record shop</p>
+        <h1>About Us</h1>
+        <p>Curated albums, tracks, and merch for listeners who still love the ritual of finding something worth replaying.</p>
+    </div>
+
+    <div class="about-story about-story--lead">
+        <div class="about-media">
+            <img src="{% static 'images/storefront.jpg' %}" alt="Cassette tape and ribbon on an orange background">
         </div>
-        <div class="col-md-6">
+        <div class="about-copy">
             <h2>Welcome to My Music Shop</h2>
             <p>We are an independent music store dedicated to providing high-quality music products for passionate fans and musicians alike. Our store offers a carefully curated selection of albums, tracks, and exclusive merchandise.</p>
-            <h3>Our Services</h3>
-            <ul>
-                <li>Wide selection of vinyls, CDs, and digital music.</li>
-                <li>Exclusive band merchandise, including T-shirts and posters.</li>
-                <li>Fast and secure worldwide shipping.</li>
-                <li>Friendly customer support for all your music needs.</li>
-            </ul>
+            <div class="about-feature-list">
+                <span><i class="fa-solid fa-record-vinyl" aria-hidden="true"></i> Vinyls, CDs, and digital music</span>
+                <span><i class="fa-solid fa-shirt" aria-hidden="true"></i> Exclusive band merchandise</span>
+                <span><i class="fa-solid fa-truck-fast" aria-hidden="true"></i> Fast worldwide shipping</span>
+                <span><i class="fa-solid fa-headphones-simple" aria-hidden="true"></i> Friendly music support</span>
+            </div>
         </div>
     </div>
-    
-    <div class="row mt-5">
-        <div class="col-md-6">
+
+    <div class="about-story about-story--reverse">
+        <div class="about-copy">
             <h3>Where We Are Based</h3>
             <p>Our store is based in the UK, but we proudly ship worldwide so that music lovers everywhere can get their hands on the best records and merchandise.</p>
             <h3>Why Choose Us?</h3>
-            <ul>
-                <li>Passion for music and dedication to quality.</li>
-                <li>Authentic, officially licensed merchandise.</li>
-                <li>Secure online shopping with multiple payment options.</li>
-                <li>Fast delivery and excellent customer service.</li>
-            </ul>
+            <div class="about-checks">
+                <span>Passion for music and dedication to quality.</span>
+                <span>Authentic, officially licensed merchandise.</span>
+                <span>Secure online shopping with multiple payment options.</span>
+                <span>Fast delivery and excellent customer service.</span>
+            </div>
         </div>
-        <div class="col-md-6">
-            <img src="{% static 'images/music-merch.jpg' %}" alt="Music Merchandise" class="img-fluid rounded">
+        <div class="about-media">
+            <img src="{% static 'images/music-merch.jpg' %}" alt="Shelves of records and music merchandise in a store">
         </div>
     </div>
-</div>
+
+    <div class="about-strip" aria-label="Shop highlights">
+        <div>
+            <strong>UK based</strong>
+            <span>Shipping worldwide</span>
+        </div>
+        <div>
+            <strong>Curated drops</strong>
+            <span>Albums, tracks, merch</span>
+        </div>
+        <div>
+            <strong>Fan first</strong>
+            <span>Support from real listeners</span>
+        </div>
+    </div>
+</section>
 {% endblock %}

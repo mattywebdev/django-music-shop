@@ -1,47 +1,139 @@
 {% extends "base.html" %}
 {% block title %}My Account{% endblock %}
 {% block content %}
-<h2>My Account</h2>
+<section class="account-page account-page--dashboard">
+  <div class="account-hero account-hero--dashboard">
+    <span class="account-hero-icon">
+      <i class="fa-solid fa-user" aria-hidden="true"></i>
+    </span>
+    <div class="account-hero-copy">
+      <p class="account-kicker">Welcome back</p>
+      <h1>Account hub</h1>
+      <p>Orders, favourites, and quick ways back into the shop.</p>
+    </div>
+  </div>
 
-<h4 class="mt-4">Recent orders</h4>
-{% if recent_orders %}
-  <ul class="list-group mb-4">
-  {% for o in recent_orders %}
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <a href="{% url 'order_detail' o.id %}">Order #{{ o.id }}</a>
-      <span>
-        <span class="badge bg-secondary">{{ o.status }}</span>
-        <strong class="ms-2">£{{ o.total_amount|floatformat:2 }}</strong>
-        <small class="text-muted ms-2">{{ o.created_at }}</small>
-      </span>
-    </li>
-  {% endfor %}
-  </ul>
-  <a class="btn btn-outline-primary" href="{% url 'order_list' %}">See all orders</a>
-{% else %}
-  <p class="text-muted">No orders yet.</p>
-{% endif %}
-
-<h4 class="mt-5">Favourites ♥</h4>
-<div class="row">
-  {% for card in fav_cards %}
-    <div class="col-md-4 mb-3">
-      <div class="card h-100">
-        {% if card.image_url %}
-          <img src="{{ card.image_url }}" class="card-img-top" alt="{{ card.title }}">
+  <div class="account-layout">
+    <aside class="account-summary-panel">
+      <div class="account-profile-card">
+        {% if avatar_url %}
+        <img src="{{ avatar_url }}" alt="{{ request.user }}" class="avatar-img" width="54" height="54">
+        {% else %}
+        <span class="avatar-fallback" style="--avatar-bg: {{ avatar_bg|default:'hsl(210 80% 35% / .85)' }}">
+          {{ avatar_initial }}
+        </span>
         {% endif %}
-        <div class="card-body">
-          <h6 class="card-title">{{ card.title }}</h6>
-          {% if card.price %}<p class="card-text">£{{ card.price|floatformat:2 }}</p>{% endif %}
-            <form method="post" action="{% url 'toggle_favorite' card.f.item_type card.f.item_id %}">
-            {% csrf_token %}
-            <button class="btn btn-sm btn-outline-danger" type="submit">Remove ♥</button>
-            </form>
+        <div>
+          <span>Signed in as</span>
+          <strong>{{ request.user.first_name|default:request.user.username }}</strong>
         </div>
       </div>
+
+      <nav class="account-quick-links" aria-label="Account shortcuts">
+        <a href="{% url 'order_list' %}">
+          <i class="fa-solid fa-receipt" aria-hidden="true"></i>
+          <span>Orders</span>
+        </a>
+        <a href="{% url 'favorites' %}">
+          <i class="fa-solid fa-heart" aria-hidden="true"></i>
+          <span>Favourites</span>
+        </a>
+        <a href="{% url 'catalog' %}">
+          <i class="fa-solid fa-record-vinyl" aria-hidden="true"></i>
+          <span>Albums</span>
+        </a>
+        <a href="{% url 'track_catalog' %}">
+          <i class="fa-solid fa-headphones" aria-hidden="true"></i>
+          <span>Tracks</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="account-main-stack">
+      <section class="account-panel">
+        <div class="account-section-head">
+          <div>
+            <p class="account-kicker">Recent activity</p>
+            <h2>Recent orders</h2>
+          </div>
+          <a class="account-text-link" href="{% url 'order_list' %}">See all</a>
+        </div>
+
+        {% if recent_orders %}
+        <div class="account-order-list">
+          {% for o in recent_orders %}
+          <a class="account-order-row" href="{% url 'order_detail' o.id %}">
+            <span>
+              <em>Order</em>
+              <strong>#{{ o.id }}</strong>
+            </span>
+            <span class="account-order-status">{{ o.status }}</span>
+            <span class="account-order-date">{{ o.created_at|date:"d M Y" }}</span>
+            <strong class="account-order-total">£{{ o.total_amount|floatformat:2 }}</strong>
+          </a>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="account-empty-inline">
+          <i class="fa-solid fa-bag-shopping" aria-hidden="true"></i>
+          <div>
+            <strong>No orders yet</strong>
+            <span>Your recent purchases will appear here.</span>
+          </div>
+        </div>
+        {% endif %}
+      </section>
+
+      <section class="account-panel">
+        <div class="account-section-head">
+          <div>
+            <p class="account-kicker">Saved picks</p>
+            <h2>Favourites</h2>
+          </div>
+          <a class="account-text-link" href="{% url 'favorites' %}">View all</a>
+        </div>
+
+        {% if fav_cards %}
+        <div class="account-fav-grid account-fav-grid--compact">
+          {% for card in fav_cards %}
+          <article class="account-fav-card">
+            <a class="account-fav-media" href="{{ card.shop_url }}" aria-label="View {{ card.title }} in shop">
+              {% if card.image_url %}
+              <img src="{{ card.image_url }}" alt="{{ card.title }}">
+              {% else %}
+              <span><i class="fa-solid fa-music" aria-hidden="true"></i></span>
+              {% endif %}
+            </a>
+            <div class="account-fav-body">
+              <div class="account-fav-topline">
+                <span>{{ card.f.item_type|title }}</span>
+                {% if card.price %}
+                <strong>£{{ card.price|floatformat:2 }}</strong>
+                {% endif %}
+              </div>
+              <h2><a href="{{ card.shop_url }}">{{ card.title }}</a></h2>
+              <div class="account-fav-actions">
+                <a class="account-primary-action" href="{{ card.shop_url }}">View</a>
+                <form method="post" action="{% url 'toggle_favorite' card.f.item_type card.f.item_id %}">
+                  {% csrf_token %}
+                  <button class="account-remove-action" type="submit">Remove ♥</button>
+                </form>
+              </div>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+        {% else %}
+        <div class="account-empty-inline">
+          <i class="fa-solid fa-heart" aria-hidden="true"></i>
+          <div>
+            <strong>No favourites yet</strong>
+            <span>Tap the heart on music or merch to save it here.</span>
+          </div>
+        </div>
+        {% endif %}
+      </section>
     </div>
-  {% empty %}
-    <p class="text-muted">No favourites yet.</p>
-  {% endfor %}
-</div>
+  </div>
+</section>
 {% endblock %}

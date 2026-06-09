@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const mobileNav = document.getElementById('navbarNav');
   const backdrop = document.querySelector('[data-mobile-drawer-close]');
   const toggler = document.querySelector('[data-mobile-nav-toggle]');
+  const accountPanel = document.getElementById('mobileAccountPanel');
+  const accountToggle = document.querySelector('[data-mobile-account-toggle]');
   if (!mobileNav || !backdrop || !toggler) return;
   const drawerPlaceholder = document.createComment('mobile nav drawer home');
   const originalParent = mobileNav.parentNode;
@@ -83,10 +85,59 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
+  function showBackdrop() {
+    backdrop.classList.add('is-active');
+    backdrop.style.setProperty('position', 'fixed', 'important');
+    backdrop.style.setProperty('inset', '0', 'important');
+    backdrop.style.setProperty('z-index', '1090', 'important');
+    backdrop.style.setProperty('display', 'block', 'important');
+    backdrop.style.setProperty('visibility', 'visible', 'important');
+    backdrop.style.setProperty('pointer-events', 'auto', 'important');
+    backdrop.style.setProperty('opacity', '1', 'important');
+  }
+
+  function setMobileAccount(open) {
+    if (!accountPanel || !accountToggle) return;
+
+    if (!isMobileNav()) {
+      accountPanel.classList.remove('is-open');
+      accountPanel.setAttribute('aria-hidden', 'true');
+      accountToggle.setAttribute('aria-expanded', 'false');
+      document.body.classList.remove('mobile-account-open');
+      return;
+    }
+
+    if (open && mobileNav.classList.contains('show')) {
+      setMobileNav(false);
+    }
+
+    accountPanel.classList.toggle('is-open', open);
+    accountPanel.setAttribute('aria-hidden', String(!open));
+    accountToggle.setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('mobile-account-open', open);
+
+    if (open) {
+      showBackdrop();
+    } else if (!mobileNav.classList.contains('show')) {
+      backdrop.classList.remove('is-active');
+      backdrop.style.setProperty('pointer-events', 'none', 'important');
+      backdrop.style.setProperty('opacity', '0', 'important');
+      window.setTimeout(function() {
+        if (accountPanel.classList.contains('is-open') || mobileNav.classList.contains('show')) return;
+        backdrop.style.setProperty('visibility', 'hidden', 'important');
+      }, 260);
+    }
+  }
+
   function setMobileNav(open) {
     clearTimeout(restoreTimer);
     mobileNav.classList.remove('collapsing');
     mobileNav.classList.add('collapse');
+
+    if (open) {
+      setMobileAccount(false);
+    }
+
     document.body.classList.toggle('mobile-nav-open', open);
     backdrop.classList.toggle('is-active', open);
     toggler.setAttribute('aria-expanded', String(open));
@@ -94,6 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!isMobileNav()) {
       mobileNav.classList.remove('show');
       backdrop.classList.remove('is-active');
+      setMobileAccount(false);
       clearMobileNavStyles();
       restoreDrawerHome();
       return;
@@ -149,9 +201,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   backdrop.addEventListener('click', function() {
     setMobileNav(false);
+    setMobileAccount(false);
   });
 
   document.addEventListener('click', function(event) {
+    if (accountToggle && event.target.closest('[data-mobile-account-toggle]')) {
+      if (!isMobileNav()) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setMobileAccount(!(accountPanel && accountPanel.classList.contains('is-open')));
+      return;
+    }
+
+    if (
+      isMobileNav() &&
+      accountPanel &&
+      accountPanel.classList.contains('is-open') &&
+      !accountPanel.contains(event.target) &&
+      !(accountToggle && accountToggle.contains(event.target))
+    ) {
+      setMobileAccount(false);
+    }
+
     if (!isMobileNav() || !mobileNav.classList.contains('show')) return;
     if (mobileNav.contains(event.target) || (toggler && toggler.contains(event.target))) return;
     setMobileNav(false);
@@ -160,6 +231,7 @@ document.addEventListener('DOMContentLoaded', function() {
   document.addEventListener('keydown', function(event) {
     if (event.key === 'Escape' && isMobileNav()) {
       setMobileNav(false);
+      setMobileAccount(false);
     }
   });
 
@@ -171,9 +243,20 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   });
 
+  if (accountPanel) {
+    accountPanel.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', function() {
+        if (isMobileNav()) {
+          setMobileAccount(false);
+        }
+      });
+    });
+  }
+
   window.addEventListener('resize', function() {
     if (!isMobileNav()) {
       setMobileNav(false);
+      setMobileAccount(false);
     }
   });
 });

@@ -1,33 +1,72 @@
 {% extends "base.html" %}
 {% block title %}My Favourites{% endblock %}
 {% block content %}
-<h2>My Favourites</h2>
-<div class="row">
-  {% for card in fav_cards %}
-    <div class="col-md-4 mb-3">
-    <div class="card h-100 position-relative">
+<section class="account-page account-page--favourites">
+  <div class="account-hero">
+    <span class="account-hero-icon account-hero-icon--heart">
+      <i class="fa-solid fa-heart" aria-hidden="true"></i>
+    </span>
+    <div class="account-hero-copy">
+      <p class="account-kicker">Saved for later</p>
+      <h1>Saved shelf</h1>
+      <p>Everything you marked for another listen, look, or checkout.</p>
+    </div>
+  </div>
+
+  {% if fav_cards %}
+  <div class="account-section-head">
+    <div>
+      <p class="account-kicker">Collection</p>
+      <h2>{{ fav_cards|length }} saved item{{ fav_cards|length|pluralize }}</h2>
+    </div>
+    <a class="account-text-link" href="{% url 'catalog' %}">
+      <i class="fa-solid fa-record-vinyl" aria-hidden="true"></i>
+      Browse albums
+    </a>
+  </div>
+
+  <div class="account-fav-grid">
+    {% for card in fav_cards %}
+    <article class="account-fav-card">
+      <a class="account-fav-media" href="{{ card.shop_url }}" aria-label="View {{ card.title }} in shop">
         {% if card.image_url %}
-        <img src="{{ card.image_url }}" class="card-img-top" alt="{{ card.title }}">
+        <img src="{{ card.image_url }}" alt="{{ card.title }}">
+        {% else %}
+        <span><i class="fa-solid fa-music" aria-hidden="true"></i></span>
         {% endif %}
-        <div class="card-body">
-        <h6 class="card-title">{{ card.title }}</h6>
-        {% if card.price %}<p class="card-text">£{{ card.price|floatformat:2 }}</p>{% endif %}
-
-        {# Make the whole card clickable #}
-        <a href="{{ card.shop_url }}" class="stretched-link" aria-label="View in shop"></a>
-
-        {# Keep remove as a real button (above the stretched link) #}
-        <form method="post" action="{% url 'toggle_favorite' card.f.item_type card.f.item_id %}" class="d-inline">
-            {% csrf_token %}
-            <button class="btn btn-sm btn-outline-danger position-relative" style="z-index:2" type="submit">
-            Remove ♥
-            </button>
-        </form>
+      </a>
+      <div class="account-fav-body">
+        <div class="account-fav-topline">
+          <span>{{ card.f.item_type|title }}</span>
+          {% if card.price %}
+          <strong>£{{ card.price|floatformat:2 }}</strong>
+          {% endif %}
         </div>
-    </div>
-    </div>
-  {% empty %}
-  <p class="text-muted">No favourites yet.</p>
-  {% endfor %}
-</div>
+        <h2><a href="{{ card.shop_url }}">{{ card.title }}</a></h2>
+        <div class="account-fav-actions">
+          <a class="account-primary-action" href="{{ card.shop_url }}">
+            <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i>
+            View
+          </a>
+          <form method="post" action="{% url 'toggle_favorite' card.f.item_type card.f.item_id %}">
+            {% csrf_token %}
+            <button class="account-remove-action" type="submit">
+              <i class="fa-solid fa-heart-crack" aria-hidden="true"></i>
+              Remove ♥
+            </button>
+          </form>
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="account-empty-state">
+    <i class="fa-solid fa-heart" aria-hidden="true"></i>
+    <h2>No favourites yet</h2>
+    <p>Save anything you like while browsing, then use this page as your quick return stack.</p>
+    <a class="account-primary-action" href="{% url 'catalog' %}">Browse music</a>
+  </div>
+  {% endif %}
+</section>
 {% endblock %}

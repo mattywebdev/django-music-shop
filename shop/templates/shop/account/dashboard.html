@@ -23,7 +23,7 @@
           {{ avatar_initial }}
         </span>
         {% endif %}
-        <div>
+        <div class="account-profile-copy">
           <span>Signed in as</span>
           <strong>{{ request.user.first_name|default:request.user.username }}</strong>
         </div>

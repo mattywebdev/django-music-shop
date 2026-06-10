@@ -2149,9 +2149,13 @@ body:has(.account-page) main.page-content {
 .account-profile-card .avatar-fallback {
   width: 54px;
   height: 54px;
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  line-height: 1;
 }
 
-.account-profile-card span {
+.account-profile-copy span {
   display: block;
   color: rgba(255,255,255,.58);
   font-size: .72rem;

@@ -12,10 +12,12 @@ class AuthViewsTests(TestCase):
     def test_register_creates_user_and_redirects(self):
         r = self.client.post(reverse("register"), {
             "username": "newbie",
+            "email": "newbie@example.com",
             "password1": "UltraSafePass123",
             "password2": "UltraSafePass123",
         }, follow=True)
         self.assertTrue(User.objects.filter(username="newbie").exists())
+        self.assertEqual(User.objects.get(username="newbie").email, "newbie@example.com")
         # lands on login page after successful register
         self.assertEqual(r.resolver_match.url_name, "login")
 

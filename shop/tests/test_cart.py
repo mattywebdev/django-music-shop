@@ -8,7 +8,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 
-from shop.models import Album, Artist, Genre, Favorite, Order, OrderItem
+from shop.models import Album, Artist, Genre, CartItem, Favorite, Order, OrderItem
 
 # Use a temp media dir so test files don't touch your real MEDIA_ROOT
 TMP_MEDIA_ROOT = tempfile.mkdtemp()
@@ -86,9 +86,30 @@ class CartFlowTests(TestCase):
         )
         self.assertNotIn(f"album_{self.album.id}", self.client.session["cart"])
 
+    def test_logged_in_cart_persists_between_sessions(self):
+        self.client.login(username="u", password="p")
+        self.client.get(reverse("add_to_cart", args=("album", self.album.id)), follow=True)
+
+        saved_item = CartItem.objects.get(
+            user=self.user,
+            item_type="album",
+            item_id=self.album.id,
+        )
+        self.assertEqual(saved_item.quantity, 1)
+
+        fresh_client = Client()
+        fresh_client.login(username="u", password="p")
+        response = fresh_client.get(reverse("cart"))
+
+        self.assertEqual(response.status_code, 200)
+        cart = fresh_client.session["cart"]
+        self.assertIn(f"album_{self.album.id}", cart)
+        self.assertEqual(cart[f"album_{self.album.id}"]["quantity"], 1)
+
     def test_checkout_creates_order_and_items(self):
         self.client.post(reverse("add_to_cart", args=("album", self.album.id)), follow=True)
         self.client.login(username="u", password="p")
         self.client.post(reverse("process_checkout"), follow=True)
         self.assertEqual(Order.objects.count(), 1)
         self.assertEqual(OrderItem.objects.count(), 1)
+        self.assertFalse(CartItem.objects.filter(user=self.user).exists())

@@ -10,7 +10,7 @@ from django.urls import reverse
 from .serializers import ProductSerializer
 from .models import (
     Album, Track, Tshirt, Vinyl, Poster, Ambient,
-    Order, OrderItem, Genre, Artist, Favorite,
+    Order, OrderItem, Genre, Artist, Favorite, CartItem,
 )
 # If you keep the DRF view below, these are needed:
 from rest_framework.decorators import api_view
@@ -59,12 +59,123 @@ def _normalise_cart(cart):
     return total_qty, total_price
 
 
-def _cart_payload(request, message="Cart updated."):
+def _cart_key(item_type, item_id):
+    return f"{item_type}_{item_id}"
+
+
+def _cart_entry_from_item(cart_item):
+    total_price = cart_item.price * cart_item.quantity
+    return {
+        "title": cart_item.title,
+        "price": str(cart_item.price),
+        "quantity": cart_item.quantity,
+        "total_price": float(total_price),
+        "icon_url": cart_item.icon_url,
+        "type": cart_item.item_type,
+        "id": cart_item.item_id,
+    }
+
+
+def load_user_cart_to_session(request):
+    if not getattr(request.user, "is_authenticated", False):
+        return request.session.get("cart", {}) or {}
+
+    cart = {
+        _cart_key(item.item_type, item.item_id): _cart_entry_from_item(item)
+        for item in CartItem.objects.filter(user=request.user)
+    }
+    total_qty, total_price = _normalise_cart(cart)
+    request.session["cart"] = cart
+    request.session["total_quantity"] = total_qty
+    request.session["cart_total_price"] = f"{total_price:.2f}"
+    request.session.modified = True
+    return cart
+
+
+def ensure_session_cart(request):
     cart = request.session.get("cart", {}) or {}
+    if cart or not getattr(request.user, "is_authenticated", False):
+        return cart
+    return load_user_cart_to_session(request)
+
+
+def save_session_cart_to_user(request):
+    if not getattr(request.user, "is_authenticated", False):
+        return
+
+    cart = request.session.get("cart", {}) or {}
+    CartItem.objects.filter(user=request.user).delete()
+
+    rows = []
+    for key, item in cart.items():
+        item_type = item.get("type")
+        item_id = item.get("id")
+
+        if not (item_type and item_id) and "_" in key:
+            item_type, raw_id = key.split("_", 1)
+            item_id = int(raw_id) if raw_id.isdigit() else None
+
+        if not (item_type and item_id):
+            continue
+
+        rows.append(CartItem(
+            user=request.user,
+            item_type=item_type,
+            item_id=int(item_id),
+            title=item.get("title") or "Item",
+            price=Decimal(str(item.get("price", "0"))),
+            quantity=max(1, int(item.get("quantity", 1) or 1)),
+            icon_url=item.get("icon_url") or "",
+        ))
+
+    if rows:
+        CartItem.objects.bulk_create(rows)
+
+
+def merge_session_cart_into_user(request):
+    if not getattr(request.user, "is_authenticated", False):
+        return
+
+    session_cart = request.session.get("cart", {}) or {}
+
+    for key, item in session_cart.items():
+        item_type = item.get("type")
+        item_id = item.get("id")
+
+        if not (item_type and item_id) and "_" in key:
+            item_type, raw_id = key.split("_", 1)
+            item_id = int(raw_id) if raw_id.isdigit() else None
+
+        if not (item_type and item_id):
+            continue
+
+        cart_item, created = CartItem.objects.get_or_create(
+            user=request.user,
+            item_type=item_type,
+            item_id=int(item_id),
+            defaults={
+                "title": item.get("title") or "Item",
+                "price": Decimal(str(item.get("price", "0"))),
+                "quantity": 0,
+                "icon_url": item.get("icon_url") or "",
+            },
+        )
+        cart_item.title = item.get("title") or cart_item.title
+        cart_item.price = Decimal(str(item.get("price", cart_item.price)))
+        cart_item.icon_url = item.get("icon_url") or cart_item.icon_url
+        cart_item.quantity += max(1, int(item.get("quantity", 1) or 1))
+        cart_item.save()
+
+    load_user_cart_to_session(request)
+
+
+def _cart_payload(request, message="Cart updated."):
+    cart = ensure_session_cart(request)
     total_qty, total_price = _normalise_cart(cart)
     request.session["cart"] = cart
     request.session["total_quantity"] = total_qty
     request.session.modified = True
+    save_session_cart_to_user(request)
 
     total_price_text = f"{total_price:.2f}"
     context = {
@@ -136,6 +247,7 @@ def loginPage(request):
 
         if user is not None:
             login(request, user)
+            merge_session_cart_into_user(request)
             return redirect('landing_page')
         else:
             messages.info(request, 'Username OR password is incorrect', extra_tags="auth")
@@ -203,7 +315,7 @@ def add_to_cart(request, item_type, item_id):
     else:
         return HttpResponse("Invalid item type", status=400)
 
-    cart = request.session.get('cart', {})
+    cart = ensure_session_cart(request)
     item_key = f"{item_type}_{item_id}"
 
     if item_key in cart:
@@ -234,7 +346,7 @@ def add_to_cart(request, item_type, item_id):
 
 
 def cart_view(request):
-    cart = request.session.get('cart', {})
+    cart = ensure_session_cart(request)
     total_price = Decimal('0.00')
     total_quantity = 0
     for it in cart.values():
@@ -251,7 +363,7 @@ def cart_view(request):
     })
 
 def checkout_view(request):
-    cart = request.session.get('cart', {})
+    cart = ensure_session_cart(request)
 
     if not cart:
         messages.error(request, "Your cart is empty.")
@@ -288,7 +400,7 @@ def process_checkout(request):
     if request.method != "POST":
         return HttpResponse("Invalid request method.", status=405)
 
-    cart = request.session.get("cart", {})
+    cart = ensure_session_cart(request)
     if not cart:
         messages.error(request, "Your cart is empty. Add items before checking out.")
         return redirect("cart")
@@ -332,6 +444,8 @@ def process_checkout(request):
 
     # Clear cart & any legacy counters
     request.session["cart"] = {}
+    if request.user.is_authenticated:
+        CartItem.objects.filter(user=request.user).delete()
     for k in ("cart_count", "cart_total_price", "total_quantity"):
         request.session.pop(k, None)
     request.session.modified = True
@@ -346,7 +460,7 @@ def success(request):
 
 def remove_from_cart(request, item_type, item_id):
     # Retrieve the cart from session
-    cart = request.session.get('cart', {})
+    cart = ensure_session_cart(request)
 
     # Construct a unique key for this item using its type and ID
     item_key = f"{item_type}_{item_id}"
@@ -372,17 +486,21 @@ def update_cart(request, album_id):
         quantity = int(request.POST.get('quantity', 1))
         
         album_id_str = str(album_id)
+        album_key = f"album_{album_id}"
 
-        cart = request.session.get('cart', {})
-        if album_id_str in cart:
-            cart[album_id_str]['quantity'] = quantity
+        cart = ensure_session_cart(request)
+        item_key = album_key if album_key in cart else album_id_str
+        if item_key in cart:
+            cart[item_key]['quantity'] = quantity
             request.session['cart'] = cart
+            request.session.modified = True
+            save_session_cart_to_user(request)
 
     return redirect('cart')
 
 # In your views.py, create a helper function to calculate total items in cart
 def get_cart_total_quantity(request):
-    cart = request.session.get('cart', {})
+    cart = ensure_session_cart(request)
     total_quantity = sum(item['quantity'] for item in cart.values())
     return total_quantity
 
@@ -402,8 +520,8 @@ def update_cart_all(request):
     if request.method != 'POST':
         return redirect('cart')
 
-    cart = request.session.get('cart', {})
-    if not isinstance(cart, (dict, list)):
+    cart = ensure_session_cart(request)
+    if not isinstance(cart, dict):
         cart = {}
 
     updated = removed = 0

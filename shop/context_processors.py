@@ -1,15 +1,46 @@
 from decimal import Decimal
-from .models import Favorite
+from .models import CartItem, Favorite
 from hashlib import md5
 
 
+def _cart_key(item):
+    return f"{item.item_type}_{item.item_id}"
+
+
+def _entry_from_cart_item(item):
+    return {
+        "title": item.title,
+        "price": str(item.price),
+        "quantity": item.quantity,
+        "total_price": float(item.price * item.quantity),
+        "icon_url": item.icon_url,
+        "type": item.item_type,
+        "id": item.item_id,
+    }
+
+
+def _session_cart(request):
+    cart = request.session.get("cart", {}) or {}
+    if cart or not getattr(request.user, "is_authenticated", False):
+        return cart
+
+    cart = {
+        _cart_key(item): _entry_from_cart_item(item)
+        for item in CartItem.objects.filter(user=request.user)
+    }
+    if cart:
+        request.session["cart"] = cart
+        request.session.modified = True
+    return cart
+
+
 def cart_total_price(request):
-    cart_items = request.session.get('cart', {})
+    cart_items = _session_cart(request)
     total_price = sum(float(item['price']) * item['quantity'] for item in cart_items.values())
     return {'total_price': total_price}
 
 def cart_summary(request):
-    cart = request.session.get("cart", {}) or {}
+    cart = _session_cart(request)
     total_qty = 0
     total_price = Decimal("0.00")
     fav_count = 0
@@ -31,7 +62,7 @@ def cart_summary(request):
 
 
 def cart_badge(request):
-    cart = request.session.get("cart", {})
+    cart = _session_cart(request)
     total_qty = 0
     total_price = Decimal("0")
 

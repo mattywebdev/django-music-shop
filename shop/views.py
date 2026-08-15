@@ -1,6 +1,7 @@
 from decimal import Decimal
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db.models import Count, Prefetch, Q
 from django.http import HttpResponse, JsonResponse, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect, render
@@ -16,6 +17,10 @@ from .models import (
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.core.paginator import Paginator
+from django.views.decorators.http import require_POST
+import stripe
+
+from .checkout_service import CheckoutError, create_pending_order, create_stripe_checkout_session
 
 def _safe_file_url(filefield, default=""):
     try:
@@ -362,6 +367,7 @@ def cart_view(request):
         'total_quantity': total_quantity,
     })
 
+@login_required(login_url='login')
 def checkout_view(request):
     cart = ensure_session_cart(request)
 
@@ -390,73 +396,33 @@ def checkout_view(request):
     })
 
 
+@login_required(login_url='login')
+@require_POST
 def process_checkout(request):
-    """
-    Convert the session cart into an Order + OrderItems, then clear the cart.
-    - Uses Decimal for money (accurate).
-    - Accepts cart entries keyed like "album_42" with values holding:
-      {title, price(str), quantity(int), type, id, ...}
-    """
-    if request.method != "POST":
-        return HttpResponse("Invalid request method.", status=405)
-
     cart = ensure_session_cart(request)
     if not cart:
         messages.error(request, "Your cart is empty. Add items before checking out.")
         return redirect("cart")
 
-    # Create an order (demo: mark as paid)
-    user = request.user if request.user.is_authenticated else None
-    order = Order.objects.create(user=user, status="paid", total_amount=Decimal("0.00"))
+    try:
+        order = create_pending_order(request.user, cart)
+        session = create_stripe_checkout_session(request, order)
+    except (CheckoutError, stripe.StripeError) as exc:
+        messages.error(request, "Checkout could not be started. Please try again.")
+        return redirect("checkout")
 
-    total = Decimal("0.00")
-    for key, item in cart.items():
-        # Try to get structured fields first
-        item_type = item.get("type")
-        item_id = item.get("id")
-        title = item.get("title") or "Item"
-        unit_price = Decimal(str(item.get("price", "0")))
-        qty = int(item.get("quantity", 1))
-
-        # Fallback: parse from key like "album_42"
-        if not (item_type and item_id):
-            if "_" in key:
-                item_type, raw_id = key.split("_", 1)
-                if raw_id.isdigit():
-                    item_id = int(raw_id)
-
-        if not (item_type and item_id):
-            # Skip unknown rows gracefully
-            continue
-
-        OrderItem.objects.create(
-            order=order,
-            item_type=item_type,
-            item_id=int(item_id),
-            title=title,
-            unit_price=unit_price,
-            quantity=qty,
-        )
-        total += unit_price * qty
-
-    order.total_amount = total
-    order.save()
-
-    # Clear cart & any legacy counters
-    request.session["cart"] = {}
-    if request.user.is_authenticated:
-        CartItem.objects.filter(user=request.user).delete()
-    for k in ("cart_count", "cart_total_price", "total_quantity"):
-        request.session.pop(k, None)
-    request.session.modified = True
-
-    messages.success(request, f"Order #{order.pk} processed successfully (demo).")
-    return redirect("success")
+    return redirect(session.url)
 
 
 
+@login_required(login_url='login')
 def success(request):
     return render(request, 'shop/success.html')
+
+
+@login_required(login_url='login')
+def checkout_cancelled(request):
+    return render(request, 'shop/checkout_cancelled.html')
 
 def remove_from_cart(request, item_type, item_id):
     # Retrieve the cart from session

@@ -1,5 +1,7 @@
 import shutil
 import tempfile
+from types import SimpleNamespace
+from unittest.mock import patch
 from datetime import date
 from decimal import Decimal
 
@@ -106,10 +108,17 @@ class CartFlowTests(TestCase):
         self.assertIn(f"album_{self.album.id}", cart)
         self.assertEqual(cart[f"album_{self.album.id}"]["quantity"], 1)
 
-    def test_checkout_creates_order_and_items(self):
+    @override_settings(STRIPE_SECRET_KEY="sk_test_example", STRIPE_CURRENCY="gbp")
+    @patch("shop.checkout_service.stripe.checkout.Session.create")
+    def test_checkout_creates_order_and_items(self, create_session):
+        create_session.return_value = SimpleNamespace(
+            id="cs_test_cart_flow",
+            url="https://checkout.stripe.com/c/pay/cs_test_cart_flow",
+        )
         self.client.post(reverse("add_to_cart", args=("album", self.album.id)), follow=True)
         self.client.login(username="u", password="p")
-        self.client.post(reverse("process_checkout"), follow=True)
+        self.client.post(reverse("process_checkout"), follow=False)
         self.assertEqual(Order.objects.count(), 1)
         self.assertEqual(OrderItem.objects.count(), 1)
-        self.assertFalse(CartItem.objects.filter(user=self.user).exists())
+        self.assertEqual(Order.objects.get().status, "pending")
+        self.assertIn(f"album_{self.album.id}", self.client.session["cart"])

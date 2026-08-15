@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout cancelled{% endblock %}
+
+{% block content %}
+<div class="success-message">
+    <h1>Checkout cancelled</h1>
+    <p>No order has been marked as paid. Your cart is still available if you would like to try again.</p>
+    <a href="{% url 'checkout' %}" class="button">Return to checkout</a>
+</div>
+{% endblock %}

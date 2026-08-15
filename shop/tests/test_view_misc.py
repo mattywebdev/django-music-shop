@@ -41,4 +41,4 @@ class MiscViewsTests(TestCase):
         self.client.post(f"/add_to_cart/album/{self.album.id}/", follow=True)
         self.client.get(f"/remove_from_cart/album/{self.album.id}/", follow=True)
         s = self.client.get("/success/")
-        self.assertEqual(s.status_code, 200)
+        self.assertEqual(s.status_code, 302)

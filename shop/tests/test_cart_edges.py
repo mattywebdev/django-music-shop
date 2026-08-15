@@ -3,6 +3,7 @@ from datetime import date
 from decimal import Decimal
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase, Client, override_settings
+from django.contrib.auth.models import User
 from shop.models import Artist, Genre, Album
 
 TMP_MEDIA_ROOT = tempfile.mkdtemp()
@@ -51,11 +52,15 @@ class CatalogEdgesTests(TestCase):
         self.assertEqual(r.status_code, 400)
 
     def test_process_checkout_empty_cart_redirects_to_cart(self):
+        User.objects.create_user("checkout-edge", password="p")
+        self.client.login(username="checkout-edge", password="p")
         r = self.client.post("/process-checkout/", follow=False)
         # should redirect to cart because cart is empty
         self.assertEqual(r.status_code, 302)
         self.assertIn("/cart", r["Location"])
 
     def test_process_checkout_rejects_get(self):
+        User.objects.create_user("checkout-get", password="p")
+        self.client.login(username="checkout-get", password="p")
         r = self.client.get("/process-checkout/")
         self.assertEqual(r.status_code, 405)

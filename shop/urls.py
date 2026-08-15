@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, account_views, api_views
+from . import views, account_views, api_views, webhook_views
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -18,6 +18,7 @@ urlpatterns = [
     path('process-checkout/', views.process_checkout, name='process_checkout'),
     path('success/', views.success, name='success'),
     path('checkout/cancelled/', views.checkout_cancelled, name='checkout_cancelled'),
+    path('stripe/webhook/', webhook_views.stripe_webhook, name='stripe_webhook'),
     path('remove_from_cart/<str:item_type>/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('login/', views.loginPage, name='login'),
     path('register/', views.register, name='register'),

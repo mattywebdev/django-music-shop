@@ -85,7 +85,7 @@ def _resolve_item(item_type, item_id):
             obj = Ambient.objects.select_related("artist").get(pk=item_id)
             title = f"{obj.name} by {obj.artist.name}"
             image_url = getattr(getattr(obj, "cover_image", None), "url", None)
-            price = getattr(obj, "price", Decimal("0.00"))
+            price = obj.get_price()
         except Ambient.DoesNotExist:
             pass
     elif item_type == 'tshirt':

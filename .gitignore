@@ -67,6 +67,7 @@ htmlcov/
 # Environment variables 
 .env
 .env.*
+!.env.example
 
 # IDE / OS files
 .vscode/

@@ -304,7 +304,7 @@ def add_to_cart(request, item_type, item_id):
     elif item_type == 'track':
         item = get_object_or_404(Track, id=item_id)
         item_title = item.title
-        item_price = item.price
+        item_price = item.get_price()
         # prefer the album’s cover
         icon_url = _safe_file_url(getattr(getattr(item, "album", None), "cover_image", None))
     elif item_type == 'ambient':

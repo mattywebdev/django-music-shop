@@ -122,16 +122,23 @@ class CartItem(models.Model):
     
 class Order(models.Model):
     STATUS_CHOICES = [
+        ("pending", "Pending"),
         ("paid", "Paid"),
         ("cancelled", "Cancelled"),
+        ("failed", "Failed"),
+        ("expired", "Expired"),
     ]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders'
     )
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="paid")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal("0.00"))
+    stripe_checkout_session_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    stripe_payment_intent_id = models.CharField(max_length=255, blank=True, default="")
+    checkout_email = models.EmailField(blank=True, default="")
+    paid_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
@@ -163,6 +170,25 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.title} x{self.quantity} ({self.item_type} #{self.item_id})"
+
+
+class StripeEvent(models.Model):
+    event_id = models.CharField(max_length=255, unique=True)
+    event_type = models.CharField(max_length=255)
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="stripe_events",
+    )
+    processed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-processed_at"]
+
+    def __str__(self):
+        return f"{self.event_type} ({self.event_id})"
     
 class Favorite(models.Model):
     ITEM_TYPE_CHOICES = [

@@ -9,3 +9,4 @@ sqlparse==0.5.1
 tzdata==2024.2
 gunicorn==26.0.0
 packaging==26.2
+stripe==15.3.1

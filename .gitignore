@@ -14,6 +14,7 @@ env/
 db.sqlite3
 *.sqlite3
 staticfiles/
+private_media/
 *.log
 
 # Ignore all media by default

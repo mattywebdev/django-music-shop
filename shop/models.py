@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from decimal import Decimal
 from django.contrib.auth.decorators import login_required
+import uuid
+
+from .storage import private_download_storage
 
 
 class Genre(models.Model):
@@ -60,6 +63,12 @@ class Track(models.Model):
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
     duration = models.DurationField() # duration of the track
     preview_clip = models.FileField(upload_to='track_previews/', null=True)
+    download_file = models.FileField(
+        upload_to='tracks/',
+        storage=private_download_storage,
+        null=True,
+        blank=True,
+    )
     price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
@@ -189,6 +198,40 @@ class StripeEvent(models.Model):
 
     def __str__(self):
         return f"{self.event_type} ({self.event_id})"
+
+
+class DigitalEntitlement(models.Model):
+    PRODUCT_TYPE_CHOICES = [
+        ("album", "Album"),
+        ("track", "Track"),
+    ]
+
+    public_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="digital_entitlements",
+    )
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name="digital_entitlements",
+    )
+    order_item = models.OneToOneField(
+        OrderItem,
+        on_delete=models.CASCADE,
+        related_name="digital_entitlement",
+    )
+    product_type = models.CharField(max_length=20, choices=PRODUCT_TYPE_CHOICES)
+    product_id = models.PositiveIntegerField()
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} – {self.product_type} #{self.product_id}"
     
 class Favorite(models.Model):
     ITEM_TYPE_CHOICES = [

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Genre, Artist, Album, Track, Tshirt, Vinyl, Poster, Ambient, Order, OrderItem, Favorite, StripeEvent
+from .models import Genre, Artist, Album, Track, Tshirt, Vinyl, Poster, Ambient, Order, OrderItem, Favorite, StripeEvent, DigitalEntitlement
 
 # Register Genre and Artist normally
 admin.site.register(Genre)
@@ -41,6 +41,19 @@ class StripeEventAdmin(admin.ModelAdmin):
     list_display = ("event_id", "event_type", "order", "processed_at")
     search_fields = ("event_id", "event_type")
     readonly_fields = ("event_id", "event_type", "order", "processed_at")
+
+@admin.register(DigitalEntitlement)
+class DigitalEntitlementAdmin(admin.ModelAdmin):
+    list_display = (
+        "public_id", "user", "order", "order_item", "product_type",
+        "product_id", "is_active", "created_at",
+    )
+    list_filter = ("product_type", "is_active", "created_at")
+    search_fields = ("public_id", "user__username", "order__id", "order_item__title")
+    readonly_fields = (
+        "public_id", "user", "order", "order_item", "product_type",
+        "product_id", "created_at",
+    )
 
 @admin.register(Favorite)
 class FavoriteAdmin(admin.ModelAdmin):

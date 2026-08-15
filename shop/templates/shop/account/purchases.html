@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}My Purchases{% endblock %}
+{% block content %}
+<section class="account-page account-page--orders">
+  <div class="account-hero account-hero--orders">
+    <span class="account-hero-icon account-hero-icon--orders">
+      <i class="fa-solid fa-download" aria-hidden="true"></i>
+    </span>
+    <div class="account-hero-copy">
+      <p class="account-kicker">Your music</p>
+      <h1>My purchases</h1>
+      <p>Download music from your paid orders.</p>
+    </div>
+  </div>
+
+  {% if purchases %}
+  <section class="account-panel account-orders-panel">
+    <div class="account-orders-list">
+      {% for purchase in purchases %}
+      <article class="account-order-card">
+        <div class="account-order-card-main">
+          <span><em>{{ purchase.entitlement.get_product_type_display }}</em><strong>{{ purchase.title }}</strong></span>
+          <span><em>Order</em><strong>#{{ purchase.entitlement.order_id }}</strong></span>
+        </div>
+        <div class="account-order-items">
+          {% for track in purchase.tracks %}
+          <span>
+            {{ track.title }}
+            <a class="account-text-link" href="{% url 'download_track' purchase.entitlement.public_id track.pk %}">Download</a>
+          </span>
+          {% empty %}
+          <span>Download file not yet available.</span>
+          {% endfor %}
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% else %}
+  <div class="account-empty-state account-empty-state--orders">
+    <h2>No digital purchases yet</h2>
+    <p>Your paid albums and tracks will appear here.</p>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

@@ -6,6 +6,7 @@ from django.utils import timezone
 
 from .models import Order, StripeEvent
 from .product_catalog import to_minor_units
+from .entitlement_service import ensure_order_entitlements
 
 
 PAYMENT_SUCCESS_EVENTS = {
@@ -101,7 +102,17 @@ def process_checkout_payment_event(event):
 
     try:
         with transaction.atomic():
-            if StripeEvent.objects.filter(event_id=event_id).exists():
+            processed_event = (
+                StripeEvent.objects.select_related("order")
+                .filter(event_id=event_id)
+                .first()
+            )
+            if processed_event:
+                if processed_event.order_id:
+                    processed_order = Order.objects.select_for_update().get(
+                        pk=processed_event.order_id
+                    )
+                    ensure_order_entitlements(processed_order)
                 return "duplicate"
 
             order, payment_intent_id = _validated_order(session)
@@ -132,6 +143,9 @@ def process_checkout_payment_event(event):
                 raise WebhookValidationError(
                     "Only pending orders can transition to paid."
                 )
+
+            order.refresh_from_db()
+            ensure_order_entitlements(order)
 
             StripeEvent.objects.create(
                 event_id=event_id,

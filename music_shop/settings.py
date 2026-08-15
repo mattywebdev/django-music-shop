@@ -169,5 +169,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
+PRIVATE_MEDIA_ROOT = Path(os.getenv("DJANGO_PRIVATE_MEDIA_ROOT", BASE_DIR / "private_media"))
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

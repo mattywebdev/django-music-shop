@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, account_views, api_views, webhook_views
+from . import views, account_views, api_views, webhook_views, entitlement_views
 from django.conf.urls.static import static
 from django.conf import settings
 
@@ -32,6 +32,12 @@ urlpatterns = [
     path('account/orders/', account_views.order_list, name='order_list'),
     path('account/orders/<int:order_id>/', account_views.order_detail, name='order_detail'),
     path('account/favorites/', account_views.favorites, name='favorites'),
+    path('account/purchases/', entitlement_views.purchase_library, name='purchase_library'),
+    path(
+        'account/purchases/<uuid:entitlement_id>/tracks/<int:track_id>/download/',
+        entitlement_views.download_track,
+        name='download_track',
+    ),
     path('favorite/toggle/<str:item_type>/<int:item_id>/', account_views.toggle_favorite, name='toggle_favorite'),
     path('account/orders/', account_views.order_list, name='account_orders'),
     path('account/orders/<int:order_id>/', account_views.order_detail, name='account_order_detail'),

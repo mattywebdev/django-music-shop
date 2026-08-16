@@ -1,6 +1,8 @@
 from pathlib import Path
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -172,3 +174,64 @@ MEDIA_URL = '/media/'
 PRIVATE_MEDIA_ROOT = Path(os.getenv("DJANGO_PRIVATE_MEDIA_ROOT", BASE_DIR / "private_media"))
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+
+def validate_production_configuration(
+    *,
+    debug,
+    secret_key,
+    stripe_secret_key,
+    stripe_webhook_secret,
+    stripe_currency,
+    media_root,
+    static_root,
+    private_media_root,
+):
+    """Fail closed when production is configured unsafely or for live Stripe."""
+    if debug:
+        return
+
+    errors = []
+    if secret_key == "django-insecure-local-demo-only-change-me" or len(secret_key) < 50:
+        errors.append("DJANGO_SECRET_KEY must be a unique secret of at least 50 characters")
+    if not stripe_secret_key.startswith("sk_test_"):
+        errors.append("STRIPE_SECRET_KEY must be a Stripe test-mode secret key")
+    if not stripe_webhook_secret.startswith("whsec_"):
+        errors.append("STRIPE_WEBHOOK_SECRET must be configured")
+    if stripe_currency != "gbp":
+        errors.append("STRIPE_CURRENCY must be gbp")
+
+    private_root = Path(private_media_root)
+    if not private_root.is_absolute():
+        errors.append("DJANGO_PRIVATE_MEDIA_ROOT must be an absolute path")
+    else:
+        private_root = private_root.resolve()
+        for setting_name, public_root_value in (
+            ("MEDIA_ROOT", media_root),
+            ("STATIC_ROOT", static_root),
+        ):
+            public_root = Path(public_root_value).resolve()
+            roots_overlap = (
+                private_root == public_root
+                or public_root in private_root.parents
+                or private_root in public_root.parents
+            )
+            if roots_overlap:
+                errors.append(
+                    f"DJANGO_PRIVATE_MEDIA_ROOT must not overlap {setting_name}"
+                )
+
+    if errors:
+        raise ImproperlyConfigured("; ".join(errors))
+
+
+validate_production_configuration(
+    debug=DEBUG,
+    secret_key=SECRET_KEY,
+    stripe_secret_key=STRIPE_SECRET_KEY,
+    stripe_webhook_secret=STRIPE_WEBHOOK_SECRET,
+    stripe_currency=STRIPE_CURRENCY,
+    media_root=MEDIA_ROOT,
+    static_root=STATIC_ROOT,
+    private_media_root=PRIVATE_MEDIA_ROOT,
+)
